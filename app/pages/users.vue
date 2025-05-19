@@ -1,205 +1,395 @@
 <template>
   <div class="container mx-auto p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">User Management</h1>
-      <UButton
-        icon="i-heroicons-plus-circle"
-        label="Add User"
-        @click="isAddUserModalOpen = true"
-      />
-    </div>
-
-    <!-- Search and Filter Section -->
-    <div class="flex flex-col md:flex-row gap-4 mb-6">
-      <div class="flex-grow">
-        <div class="flex">
-          <UInput
-            v-model="searchQuery"
-            placeholder="Search by name, email..."
-            icon="i-heroicons-magnifying-glass"
-            class="flex-grow"
-            @update:model-value="applyFilters"
-          />
+    <UTabs
+      :items="tabItems"
+      variant="link"
+      class="gap-4 w-full"
+      :ui="{ trigger: 'grow' }"
+    >
+      <template #users>
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-3xl font-bold">User Management</h1>
           <UButton
-            icon="i-heroicons-adjustments-horizontal"
-            @click="isAdvancedFilterOpen = !isAdvancedFilterOpen"
-            :variant="isAdvancedFilterOpen ? 'solid' : 'outline'"
-            class="ml-2"
+            icon="i-heroicons-plus-circle"
+            label="Add User"
+            @click="isAddUserModalOpen = true"
           />
         </div>
-      </div>
-      <div class="flex gap-2">
-        <USelect
-          v-model="roleFilter"
-          placeholder="Filter by role"
-          :items="roleOptions"
-          @update:model-value="applyFilters"
-        />
-        <UButton
-          v-if="hasActiveFilters"
-          icon="i-heroicons-x-mark"
-          color="gray"
-          variant="ghost"
-          @click="resetFilters"
-          label="Reset Filters"
-        />
-      </div>
-    </div>
 
-    <!-- Advanced Filter Panel -->
-    <UCard v-if="isAdvancedFilterOpen" class="mb-6">
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-medium">Advanced Filters</h3>
-          <UButton
-            icon="i-heroicons-x-mark"
-            color="gray"
-            variant="ghost"
-            @click="isAdvancedFilterOpen = false"
-          />
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+          <div class="flex-grow">
+            <div class="flex">
+              <UInput
+                v-model="searchQuery"
+                placeholder="Search by name, email..."
+                icon="i-heroicons-magnifying-glass"
+                class="flex-grow"
+                @update:model-value="applyFilters"
+              />
+              <UButton
+                icon="i-heroicons-adjustments-horizontal"
+                @click="isAdvancedFilterOpen = !isAdvancedFilterOpen"
+                :variant="isAdvancedFilterOpen ? 'solid' : 'outline'"
+                class="ml-2"
+              />
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <USelect
+              v-model="roleFilter"
+              placeholder="Filter by role"
+              :items="roleOptions"
+              @update:model-value="applyFilters"
+            />
+            <UButton
+              v-if="hasActiveFilters"
+              icon="i-heroicons-x-mark"
+              color="gray"
+              variant="ghost"
+              @click="resetFilters"
+              label="Reset Filters"
+            />
+          </div>
         </div>
-      </template>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700">Status</label>
-          <USelect
-            v-model="statusFilter"
-            :items="statusOptions"
-            @update:model-value="applyFilters"
-          />
-        </div>
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700"
-            >Created Date</label
-          >
-          <UInput
-            type="date"
-            v-model="dateFilter"
-            @update:model-value="applyFilters"
-          />
-        </div>
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700">Sort By</label>
-          <USelect
-            v-model="sortOption"
-            :items="sortOptions"
-            @update:model-value="applyFilters"
-          />
-        </div>
-      </div>
-    </UCard>
 
-    <!-- Users Table -->
-    <UCard>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+        <!-- Advanced Filter Panel -->
+        <UCard v-if="isAdvancedFilterOpen" class="mb-6">
+          <template #header>
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-medium">Advanced Filters</h3>
+              <UButton
+                icon="i-heroicons-x-mark"
+                color="gray"
+                variant="ghost"
+                @click="isAdvancedFilterOpen = false"
+              />
+            </div>
+          </template>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Status</label
               >
-                Name
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              <USelect
+                v-model="statusFilter"
+                :items="statusOptions"
+                @update:model-value="applyFilters"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Sort By</label
               >
-                Email
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Role
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Status
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-if="loading">
-              <td colspan="6" class="px-6 py-4 text-center">Loading...</td>
-            </tr>
-            <tr v-else-if="paginatedUsers.length === 0">
-              <td colspan="6" class="px-6 py-4 text-center">No users found</td>
-            </tr>
-            <tr
-              v-for="user in paginatedUsers"
-              :key="user.id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <UBadge :color="getRoleBadgeColor(user.role)" variant="subtle">
-                  {{ user.role }}
-                </UBadge>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <UBadge
-                  :color="user.is_active ? 'success' : 'error'"
-                  variant="subtle"
+              <USelect
+                v-model="sortOption"
+                :items="sortOptions"
+                @update:model-value="applyFilters"
+              />
+            </div>
+          </div>
+        </UCard>
+
+        <!-- Users Table -->
+        <UCard>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Email
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Role
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-if="loading">
+                  <td colspan="6" class="px-6 py-4 text-center">Loading...</td>
+                </tr>
+                <tr v-else-if="paginatedUsers.length === 0">
+                  <td colspan="6" class="px-6 py-4 text-center">
+                    No users found
+                  </td>
+                </tr>
+                <tr
+                  v-for="user in paginatedUsers"
+                  :key="user.id"
+                  class="hover:bg-gray-50"
                 >
-                  {{ user.is_active ? "Active" : "Inactive" }}
-                </UBadge>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <UButton
-                    icon="i-heroicons-eye"
-                    color="gray"
-                    variant="ghost"
-                    @click="viewUser(user)"
-                    title="View Details"
-                  />
-                  <UButton
-                    icon="i-heroicons-pencil-square"
-                    color="gray"
-                    variant="ghost"
-                    @click="editUser(user)"
-                    title="Edit User"
-                  />
-                  <UButton
-                    icon="i-heroicons-trash"
-                    color="gray"
-                    variant="ghost"
-                    @click="confirmDeleteUser(user)"
-                    title="Delete User"
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <UBadge
+                      :color="getRoleBadgeColor(user.role)"
+                      variant="subtle"
+                    >
+                      {{ user.role }}
+                    </UBadge>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <UBadge
+                      :color="user.is_active ? 'success' : 'error'"
+                      variant="subtle"
+                    >
+                      {{ user.is_active ? "Active" : "Inactive" }}
+                    </UBadge>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <UButton
+                        icon="i-heroicons-eye"
+                        color="gray"
+                        variant="ghost"
+                        @click="viewUser(user)"
+                        title="View Details"
+                      />
+                      <UButton
+                        icon="i-heroicons-pencil-square"
+                        color="gray"
+                        variant="ghost"
+                        @click="editUser(user)"
+                        title="Edit User"
+                      />
+                      <UButton
+                        icon="i-heroicons-trash"
+                        color="gray"
+                        variant="ghost"
+                        @click="confirmDeleteUser(user)"
+                        title="Delete User"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-      <!-- Pagination -->
-      <template #footer>
-        <div class="flex items-center justify-between">
-          <p class="text-sm text-gray-500">
-            Showing {{ paginatedUsers.length }} of
-            {{ filteredUsers.length }} users
-          </p>
-          <UPagination
-            v-model="page"
-            :page-count="pageCount"
-            :total="filteredUsers.length"
-            :ui="{ wrapper: 'flex items-center gap-1' }"
+          <!-- Pagination -->
+          <template #footer>
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-500">
+                Showing {{ paginatedUsers.length }} of
+                {{ filteredUsers.length }} users
+              </p>
+              <UPagination
+                v-model="page"
+                :page-count="pageCount"
+                :total="filteredUsers.length"
+                :ui="{ wrapper: 'flex items-center gap-1' }"
+              />
+            </div>
+          </template>
+        </UCard>
+      </template>
+
+      <template #wa-users>
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-3xl font-bold">WhatsApp User Management</h1>
+          <UButton
+            icon="i-heroicons-plus-circle"
+            label="Add User"
+            @click="isAddWAUserModalOpen = true"
           />
         </div>
+
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+          <div class="flex-grow">
+            <div class="flex">
+              <UInput
+                v-model="waSearchQuery"
+                placeholder="Search by name, phone..."
+                icon="i-heroicons-magnifying-glass"
+                class="flex-grow"
+                @update:model-value="applyWAFilters"
+              />
+              <UButton
+                icon="i-heroicons-adjustments-horizontal"
+                @click="isAdvancedWAFilterOpen = !isAdvancedWAFilterOpen"
+                :variant="isAdvancedWAFilterOpen ? 'solid' : 'outline'"
+                class="ml-2"
+              />
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <UButton
+              v-if="hasActiveWAFilters"
+              icon="i-heroicons-x-mark"
+              color="gray"
+              variant="ghost"
+              @click="resetWAFilters"
+              label="Reset Filters"
+            />
+          </div>
+        </div>
+
+        <!-- Advanced Filter Panel -->
+        <UCard v-if="isAdvancedWAFilterOpen" class="mb-6">
+          <template #header>
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-medium">Advanced Filters</h3>
+              <UButton
+                icon="i-heroicons-x-mark"
+                color="gray"
+                variant="ghost"
+                @click="isAdvancedWAFilterOpen = false"
+              />
+            </div>
+          </template>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Status</label
+              >
+              <USelect
+                v-model="waStatusFilter"
+                :items="statusOptions"
+                @update:model-value="applyWAFilters"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Sort By</label
+              >
+              <USelect
+                v-model="waSortOption"
+                :items="waSortOptions"
+                @update:model-value="applyWAFilters"
+              />
+            </div>
+          </div>
+        </UCard>
+
+        <!-- Users Table -->
+        <UCard>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Phone
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-if="loading">
+                  <td colspan="6" class="px-6 py-4 text-center">Loading...</td>
+                </tr>
+                <tr v-else-if="waPaginatedUsers.length === 0">
+                  <td colspan="6" class="px-6 py-4 text-center">
+                    No users found
+                  </td>
+                </tr>
+                <tr
+                  v-for="user in waPaginatedUsers"
+                  :key="user.id"
+                  class="hover:bg-gray-50"
+                >
+                  <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ user.phone }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <UBadge
+                      :color="user.is_active ? 'success' : 'error'"
+                      variant="subtle"
+                    >
+                      {{ user.is_active ? "Active" : "Inactive" }}
+                    </UBadge>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <UButton
+                        icon="i-heroicons-eye"
+                        color="gray"
+                        variant="ghost"
+                        @click="viewWAUser(user)"
+                        title="View Details"
+                      />
+                      <UButton
+                        icon="i-heroicons-pencil-square"
+                        color="gray"
+                        variant="ghost"
+                        @click="editWAUser(user)"
+                        title="Edit User"
+                      />
+                      <UButton
+                        icon="i-heroicons-trash"
+                        color="gray"
+                        variant="ghost"
+                        @click="confirmDeleteWAUser(user)"
+                        title="Delete User"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <template #footer>
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-500">
+                Showing {{ waPaginatedUsers.length }} of
+                {{ waFilteredUsers.length }} users
+              </p>
+              <UPagination
+                v-model="waPage"
+                :page-count="waPageCount"
+                :total="waFilteredUsers.length"
+                :ui="{ wrapper: 'flex items-center gap-1' }"
+              />
+            </div>
+          </template>
+        </UCard>
       </template>
-    </UCard>
+    </UTabs>
 
     <!-- Add User Modal -->
     <UModal v-model:open="isAddUserModalOpen" :ui="{ width: 'max-w-2xl' }">
@@ -387,12 +577,196 @@
         </div>
       </template>
     </UModal>
+
+    <!-- Add WA User Modal -->
+    <UModal v-model:open="isAddWAUserModalOpen" :ui="{ width: 'max-w-2xl' }">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium" id="add-user-title">Add New User</h3>
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="gray"
+            variant="ghost"
+            @click="isAddWAUserModalOpen = false"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+
+      <template #body>
+        <div aria-describedby="add-user-description">
+          <p id="add-user-description" class="sr-only">
+            Form to add a new user
+          </p>
+          <WAUserForm
+            :user="newWAUser"
+            @submit="addWAUser"
+            @cancel="isAddWAUserModalOpen = false"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <!-- Edit WA User Modal -->
+    <UModal v-model:open="isEditWAUserModalOpen" :ui="{ width: 'max-w-2xl' }">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium" id="edit-user-title">Edit User</h3>
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="gray"
+            variant="ghost"
+            @click="isEditWAUserModalOpen = false"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+
+      <template #body>
+        <div aria-describedby="edit-user-description">
+          <p id="edit-user-description" class="sr-only">
+            Form to edit user details
+          </p>
+          <WAUserForm
+            :user="editingWAUser"
+            :is-editing="true"
+            @submit="updateWAUser"
+            @cancel="isEditWAUserModalOpen = false"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <!-- View WA User Modal -->
+    <UModal v-model:open="isViewWAUserModalOpen" :ui="{ width: 'max-w-2xl' }">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium" id="view-user-title">
+            WhatsApp User Details
+          </h3>
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="gray"
+            variant="ghost"
+            @click="isViewWAUserModalOpen = false"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+
+      <template #body>
+        <div
+          v-if="viewingWAUser"
+          class="space-y-4"
+          aria-describedby="view-user-description"
+        >
+          <p id="view-user-description" class="sr-only">
+            Detailed information about the selected user
+          </p>
+          <div class="flex items-center space-x-4">
+            <div class="bg-gray-100 rounded-full p-4">
+              <UIcon name="i-heroicons-user-circle" class="text-3xl" />
+            </div>
+            <div>
+              <h4 class="text-xl font-medium">{{ viewingWAUser.name }}</h4>
+              <p class="text-gray-500">{{ viewingWAUser.phone }}</p>
+            </div>
+          </div>
+
+          <hr class="my-4 border-t border-gray-200" />
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h5 class="text-sm font-medium text-gray-500">Status</h5>
+              <UBadge
+                :color="viewingWAUser.is_active ? 'success' : 'error'"
+                variant="subtle"
+              >
+                {{ viewingWAUser.is_active ? "Active" : "Inactive" }}
+              </UBadge>
+            </div>
+            <div>
+              <h5 class="text-sm font-medium text-gray-500">Created Date</h5>
+              <p>
+                {{
+                  formatDate(
+                    viewingWAUser.created_at || viewingWAUser.createdAt
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            label="Close"
+            color="gray"
+            variant="outline"
+            @click="isViewWAUserModalOpen = false"
+          />
+          <UButton
+            label="Edit"
+            icon="i-heroicons-pencil-square"
+            @click="editWAFromViewModal"
+          />
+        </div>
+      </template>
+    </UModal>
+
+    <!-- Delete Confirmation Modal -->
+    <UModal v-model:open="isDeleteWAModalOpen">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium" id="delete-user-title">
+            Confirm Delete
+          </h3>
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="gray"
+            variant="ghost"
+            @click="isDeleteWAModalOpen = false"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+
+      <template #body>
+        <div aria-describedby="delete-user-description">
+          <p id="delete-user-description">
+            Are you sure you want to delete the user "{{
+              deletingWAUser?.name
+            }}"? This action cannot be undone.
+          </p>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            label="Cancel"
+            color="gray"
+            variant="outline"
+            @click="isDeleteWAModalOpen = false"
+          />
+          <UButton
+            label="Delete"
+            color="red"
+            icon="i-heroicons-trash"
+            @click="deleteWAUser"
+          />
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useUserStore } from "~/stores/user";
+import { useWAUserStore } from "~/stores/wauser";
 
 const userStore = useUserStore();
 const loading = ref(true);
@@ -405,11 +779,25 @@ const dateFilter = ref(null);
 const sortOption = ref(null);
 const isAdvancedFilterOpen = ref(false);
 
+const waUserStore = useWAUserStore();
+const waPage = ref(1);
+const waPerPage = ref(10);
+const waSearchQuery = ref("");
+const waRoleFilter = ref(null);
+const waStatusFilter = ref(null);
+const waSortOption = ref(null);
+const isAdvancedWAFilterOpen = ref(false);
+
 // Modal states
 const isAddUserModalOpen = ref(false);
 const isEditUserModalOpen = ref(false);
 const isViewUserModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+
+const isAddWAUserModalOpen = ref(false);
+const isEditWAUserModalOpen = ref(false);
+const isViewWAUserModalOpen = ref(false);
+const isDeleteWAModalOpen = ref(false);
 
 // User data
 const newUser = ref({
@@ -444,10 +832,52 @@ const deletingUser = ref({
   email: "",
 });
 
+const newWAUser = ref({
+  name: "",
+  email: "",
+  password: "",
+  role: "Editor",
+  is_active: true,
+  created_at: new Date().toISOString(),
+});
+
+const editingWAUser = ref({
+  name: "",
+  phone: "",
+  is_active: true,
+  created_at: new Date().toISOString(),
+});
+const viewingWAUser = ref({
+  id: 0,
+  name: "",
+  phone: "",
+  is_active: true,
+  created_at: new Date().toISOString(),
+});
+const deletingWAUser = ref({
+  id: 0,
+  name: "",
+  phone: "",
+});
+
 // Table configuration
 // We're now using a simple HTML table instead of UTable
 
 const sort = ref({ column: "id", direction: "asc" });
+const waSort = ref({ column: "id", direction: "asc" });
+
+const tabItems = [
+  {
+    label: "Users",
+    icon: "i-lucide-user",
+    slot: "users",
+  },
+  {
+    label: "WhatsApp Users",
+    icon: "i-lucide-user",
+    slot: "wa-users",
+  },
+];
 
 // Filter options
 const roleOptions = [
@@ -464,12 +894,15 @@ const statusOptions = [
 ];
 
 const sortOptions = [
-  { label: "ID (Ascending)", value: { column: "id", direction: "asc" } },
-  { label: "ID (Descending)", value: { column: "id", direction: "desc" } },
   { label: "Name (A-Z)", value: { column: "name", direction: "asc" } },
   { label: "Name (Z-A)", value: { column: "name", direction: "desc" } },
   { label: "Email (A-Z)", value: { column: "email", direction: "asc" } },
   { label: "Email (Z-A)", value: { column: "email", direction: "desc" } },
+];
+
+const waSortOptions = [
+  { label: "Name (A-Z)", value: { column: "name", direction: "asc" } },
+  { label: "Name (Z-A)", value: { column: "name", direction: "desc" } },
 ];
 
 // Computed properties
@@ -525,6 +958,42 @@ const filteredUsers = computed(() => {
   return result;
 });
 
+const waFilteredUsers = computed(() => {
+  let result = [...waUserStore.wausers];
+
+  // Apply search query
+  if (waSearchQuery.value) {
+    const query = waSearchQuery.value.toLowerCase();
+    result = result.filter(
+      (user) =>
+        user.name.toLowerCase().includes(query) ||
+        user.phone.toLowerCase().includes(query)
+    );
+  }
+
+  // Apply status filter
+  if (waStatusFilter.value !== null) {
+    result = result.filter((user) => user.is_active === waStatusFilter.value);
+  }
+
+  // Apply sorting
+  if (waSort.value) {
+    const { column, direction } = waSort.value;
+    result.sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+
+      if (direction === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  }
+
+  return result;
+});
+
 const paginatedUsers = computed(() => {
   const start = (page.value - 1) * perPage.value;
   const end = start + perPage.value;
@@ -535,6 +1004,16 @@ const pageCount = computed(() => {
   return Math.ceil(filteredUsers.value.length / perPage.value);
 });
 
+const waPaginatedUsers = computed(() => {
+  const start = (waPage.value - 1) * waPerPage.value;
+  const end = start + waPerPage.value;
+  return waFilteredUsers.value.slice(start, end);
+});
+
+const waPageCount = computed(() => {
+  return Math.ceil(waFilteredUsers.value.length / waPerPage.value);
+});
+
 const hasActiveFilters = computed(() => {
   return (
     searchQuery.value ||
@@ -542,6 +1021,10 @@ const hasActiveFilters = computed(() => {
     statusFilter.value ||
     dateFilter.value
   );
+});
+
+const hasActiveWAFilters = computed(() => {
+  return waSearchQuery.value || waRoleFilter.value || waStatusFilter.value;
 });
 
 // Methods
@@ -554,6 +1037,15 @@ function applyFilters() {
   }
 }
 
+function applyWAFilters() {
+  waPage.value = 1;
+
+  // Apply sort option if selected
+  if (waSortOption.value) {
+    waSort.value = waSortOption.value;
+  }
+}
+
 function resetFilters() {
   searchQuery.value = "";
   roleFilter.value = null;
@@ -562,6 +1054,15 @@ function resetFilters() {
   sortOption.value = null;
   sort.value = { column: "id", direction: "asc" };
   page.value = 1;
+}
+
+function resetWAFilters() {
+  waSearchQuery.value = "";
+  waRoleFilter.value = null;
+  waStatusFilter.value = null;
+  waSortOption.value = null;
+  waSort.value = { column: "id", direction: "asc" };
+  waPage.value = 1;
 }
 
 function getRoleBadgeColor(role) {
@@ -629,12 +1130,59 @@ function deleteUser() {
   }
 }
 
+function viewWAUser(user) {
+  viewingWAUser.value = { ...user };
+  isViewWAUserModalOpen.value = true;
+}
+
+function editWAUser(user) {
+  editingWAUser.value = { ...user };
+  isEditWAUserModalOpen.value = true;
+}
+
+function editWAFromViewModal() {
+  editingWAUser.value = { ...viewingWAUser.value };
+  isViewWAUserModalOpen.value = false;
+  isEditWAUserModalOpen.value = true;
+}
+
+function confirmDeleteWAUser(user) {
+  deletingWAUser.value = user;
+  isDeleteWAModalOpen.value = true;
+}
+
+function addWAUser(userData) {
+  waUserStore.addUser(userData);
+  isAddWAUserModalOpen.value = false;
+  newWAUser.value = {
+    name: "",
+    phone: "",
+    is_active: true,
+    created_at: new Date().toISOString(),
+  };
+}
+
+function updateWAUser(userData) {
+  waUserStore.updateUser(userData);
+  isEditWAUserModalOpen.value = false;
+}
+
+function deleteWAUser() {
+  if (deletingWAUser.value) {
+    waUserStore.deleteUser(deletingWAUser.value.id);
+    isDeleteWAModalOpen.value = false;
+    deletingWAUser.value = null;
+  }
+}
+
 onMounted(async () => {
   try {
     // Always fetch users when the component is mounted
     loading.value = true;
     await userStore.fetchUsers();
     console.log("Users loaded:", userStore.users);
+    await waUserStore.fetchUsers();
+    console.log("WA Users loaded:", waUserStore.users);
   } catch (error) {
     console.error("Error loading users:", error);
   } finally {
