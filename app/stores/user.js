@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia';
+import { useSupabase } from '~/utils/supabase';
 
+/**
+ * User store for managing users
+ * @typedef {import('~/types/user').User} User
+ */
 export const useUserStore = defineStore('user', {
   state: () => ({
     users: [],
@@ -17,11 +22,11 @@ export const useUserStore = defineStore('user', {
     },
     
     activeUsers: (state) => {
-      return state.users.filter(user => user.status === 'Active');
+      return state.users.filter(user => user.is_active === true);
     },
     
     inactiveUsers: (state) => {
-      return state.users.filter(user => user.status === 'Inactive');
+      return state.users.filter(user => user.is_active === false);
     },
     
     totalUsers: (state) => {
@@ -35,224 +40,317 @@ export const useUserStore = defineStore('user', {
       this.error = null;
       
       try {
-        // In a real application, this would be an API call
-        // For this demo, we'll use mock data
-        const mockUsers = [
-          {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            role: 'Admin',
-            status: 'Active',
-            address: '123 Main St, Anytown, USA',
-            notes: 'System administrator with full access',
-            createdAt: '2025-01-15T08:30:00.000Z'
-          },
-          {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            role: 'User',
-            status: 'Active',
-            address: '456 Oak Ave, Somewhere, USA',
-            notes: 'Marketing department staff',
-            createdAt: '2025-02-20T10:15:00.000Z'
-          },
-          {
-            id: 3,
-            name: 'Robert Johnson',
-            email: 'robert.johnson@example.com',
-            role: 'Editor',
-            status: 'Inactive',
-            address: '789 Pine Rd, Elsewhere, USA',
-            notes: 'Content editor, currently on leave',
-            createdAt: '2025-03-10T14:45:00.000Z'
-          },
-          {
-            id: 4,
-            name: 'Emily Davis',
-            email: 'emily.davis@example.com',
-            role: 'User',
-            status: 'Active',
-            address: '321 Elm St, Nowhere, USA',
-            notes: 'Sales department representative',
-            createdAt: '2025-03-25T09:20:00.000Z'
-          },
-          {
-            id: 5,
-            name: 'Michael Wilson',
-            email: 'michael.wilson@example.com',
-            role: 'Admin',
-            status: 'Active',
-            address: '654 Maple Dr, Anyplace, USA',
-            notes: 'IT department manager',
-            createdAt: '2025-04-05T11:30:00.000Z'
-          },
-          {
-            id: 6,
-            name: 'Sarah Brown',
-            email: 'sarah.brown@example.com',
-            role: 'User',
-            status: 'Active',
-            address: '987 Cedar Ln, Somewhere, USA',
-            notes: 'Human resources specialist',
-            createdAt: '2025-04-15T13:10:00.000Z'
-          },
-          {
-            id: 7,
-            name: 'David Miller',
-            email: 'david.miller@example.com',
-            role: 'Editor',
-            status: 'Active',
-            address: '159 Birch Blvd, Elsewhere, USA',
-            notes: 'Content creator for blog posts',
-            createdAt: '2025-04-30T15:45:00.000Z'
-          },
-          {
-            id: 8,
-            name: 'Jennifer Taylor',
-            email: 'jennifer.taylor@example.com',
-            role: 'User',
-            status: 'Inactive',
-            address: '753 Spruce St, Nowhere, USA',
-            notes: 'Accounting department, on maternity leave',
-            createdAt: '2025-05-10T08:50:00.000Z'
-          },
-          {
-            id: 9,
-            name: 'Thomas Anderson',
-            email: 'thomas.anderson@example.com',
-            role: 'Admin',
-            status: 'Active',
-            address: '951 Walnut Ave, Anyplace, USA',
-            notes: 'System architect and developer',
-            createdAt: '2025-05-20T10:30:00.000Z'
-          },
-          {
-            id: 10,
-            name: 'Lisa Martinez',
-            email: 'lisa.martinez@example.com',
-            role: 'User',
-            status: 'Active',
-            address: '357 Pineapple Way, Somewhere, USA',
-            notes: 'Customer support representative',
-            createdAt: '2025-06-01T14:15:00.000Z'
-          },
-          {
-            id: 11,
-            name: 'Kevin White',
-            email: 'kevin.white@example.com',
-            role: 'Editor',
-            status: 'Active',
-            address: '246 Orange Rd, Elsewhere, USA',
-            notes: 'Graphics designer and content editor',
-            createdAt: '2025-06-15T09:40:00.000Z'
-          },
-          {
-            id: 12,
-            name: 'Amanda Clark',
-            email: 'amanda.clark@example.com',
-            role: 'User',
-            status: 'Inactive',
-            address: '135 Lemon St, Nowhere, USA',
-            notes: 'Project manager, currently on sabbatical',
-            createdAt: '2025-06-30T11:20:00.000Z'
-          }
-        ];
+        // Fetch users from Supabase
+        const supabase = useSupabase();
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('id', { ascending: true });
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        if (error) throw error;
         
-        this.users = mockUsers;
+        this.users = data || [];
+        
+        // If no users exist in the database, seed with initial data
+        if (this.users.length === 0) {
+          await this.seedInitialUsers();
+        }
       } catch (error) {
         this.error = error.message || 'Failed to fetch users';
         console.error('Error fetching users:', error);
+        
+        // Fallback to mock data if Supabase connection fails
+        await this.useMockData();
       } finally {
         this.isLoading = false;
       }
     },
     
-    addUser(userData) {
+    async useMockData() {
+      // Mock data as fallback
+      const mockUsers = [
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john.doe@example.com',
+          password: 'hashed_password_here', // In a real app, this would be properly hashed
+          role: 'Admin',
+          is_active: true,
+          is_deleted: false,
+          created_at: '2025-01-15T08:30:00.000Z',
+          updated_at: '2025-01-15T08:30:00.000Z'
+        },
+        {
+          id: '2',
+          name: 'Jane Smith',
+          email: 'jane.smith@example.com',
+          password: 'hashed_password_here', // In a real app, this would be properly hashed
+          role: 'User',
+          is_active: true,
+          is_deleted: false,
+          created_at: '2025-02-20T10:15:00.000Z',
+          updated_at: '2025-02-20T10:15:00.000Z'
+        },
+        {
+          id: '3',
+          name: 'Robert Johnson',
+          email: 'robert.johnson@example.com',
+          password: 'hashed_password_here', // In a real app, this would be properly hashed
+          role: 'Editor',
+          is_active: false,
+          is_deleted: false,
+          created_at: '2025-03-10T14:45:00.000Z',
+          updated_at: '2025-03-10T14:45:00.000Z'
+        },
+        {
+          id: '4',
+          name: 'Emily Davis',
+          email: 'emily.davis@example.com',
+          password: 'hashed_password_here', // In a real app, this would be properly hashed
+          role: 'User',
+          is_active: true,
+          is_deleted: false,
+          created_at: '2025-03-25T09:20:00.000Z',
+          updated_at: '2025-03-25T09:20:00.000Z'
+        },
+        {
+          id: '5',
+          name: 'Michael Wilson',
+          email: 'michael.wilson@example.com',
+          password: 'hashed_password_here', // In a real app, this would be properly hashed
+          role: 'Admin',
+          is_active: true,
+          is_deleted: false,
+          created_at: '2025-04-05T11:30:00.000Z',
+          updated_at: '2025-04-05T11:30:00.000Z'
+        }
+      ];
+      
+      this.users = mockUsers;
+      console.log('Using mock data as fallback');
+    },
+    
+    async addUser(userData) {
       try {
-        // Generate a new ID (in a real app, the server would do this)
-        const newId = this.users.length > 0 
-          ? Math.max(...this.users.map(user => user.id)) + 1 
-          : 1;
+        const now = new Date().toISOString();
+        // Format the data for Supabase (snake_case)
+        const newUser = {
+          name: userData.name,
+          email: userData.email,
+          password: userData.password, // In a real app, this would be properly hashed
+          role: userData.role,
+          is_active: userData.is_active !== undefined ? userData.is_active : true,
+          is_deleted: userData.is_deleted !== undefined ? userData.is_deleted : false,
+          created_at: userData.created_at || now,
+          updated_at: userData.updated_at || now
+        };
+        
+        // Insert the new user into Supabase
+        const supabase = useSupabase();
+        const { data, error } = await supabase
+          .from('profiles')
+          .insert(newUser)
+          .select();
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          // Add the new user to the local state
+          this.users.push(data[0]);
+          return data[0];
+        }
+        
+        throw new Error('Failed to add user: No data returned');
+      } catch (error) {
+        this.error = error.message || 'Failed to add user';
+        console.error('Error adding user:', error);
+        
+        // Fallback to local operation if Supabase fails
+        const newId = this.users.length > 0
+          ? String(Math.max(...this.users.map(user => parseInt(user.id))) + 1)
+          : '1';
         
         const newUser = {
           id: newId,
           ...userData,
-          createdAt: userData.createdAt || new Date().toISOString()
+          created_at: userData.created_at || new Date().toISOString(),
+          updated_at: userData.updated_at || new Date().toISOString()
         };
         
         this.users.push(newUser);
         return newUser;
-      } catch (error) {
-        this.error = error.message || 'Failed to add user';
-        console.error('Error adding user:', error);
-        throw error;
       }
     },
     
-    updateUser(userData) {
+    async updateUser(userData) {
       try {
+        // Format the data for Supabase (snake_case)
+        const updatedUser = {
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          is_active: userData.is_active,
+          is_deleted: userData.is_deleted,
+          updated_at: new Date().toISOString()
+        };
+        
+        // Update the user in Supabase
+        const supabase = useSupabase();
+        const { error } = await supabase
+          .from('profiles')
+          .update(updatedUser)
+          .eq('id', userData.id);
+        
+        if (error) throw error;
+        
+        // Update the user in the local state
         const index = this.users.findIndex(user => user.id === userData.id);
         
         if (index === -1) {
           throw new Error(`User with ID ${userData.id} not found`);
         }
         
-        // Update the user data
         this.users[index] = {
           ...this.users[index],
-          ...userData
+          ...updatedUser
         };
         
         return this.users[index];
       } catch (error) {
         this.error = error.message || 'Failed to update user';
         console.error('Error updating user:', error);
-        throw error;
+        
+        // Fallback to local operation if Supabase fails
+        const index = this.users.findIndex(user => user.id === userData.id);
+        
+        if (index === -1) {
+          throw new Error(`User with ID ${userData.id} not found`);
+        }
+        
+        this.users[index] = {
+          ...this.users[index],
+          ...userData
+        };
+        
+        return this.users[index];
       }
     },
     
-    deleteUser(userId) {
+    async deleteUser(userId) {
       try {
+        // Delete the user from Supabase
+        const supabase = useSupabase();
+        const { error } = await supabase
+          .from('profiles')
+          .delete()
+          .eq('id', userId);
+        
+        if (error) throw error;
+        
+        // Remove the user from the local state
         const index = this.users.findIndex(user => user.id === userId);
         
         if (index === -1) {
           throw new Error(`User with ID ${userId} not found`);
         }
         
-        // Remove the user
         this.users.splice(index, 1);
         
         return true;
       } catch (error) {
         this.error = error.message || 'Failed to delete user';
         console.error('Error deleting user:', error);
-        throw error;
+        
+        // Fallback to local operation if Supabase fails
+        const index = this.users.findIndex(user => user.id === userId);
+        
+        if (index === -1) {
+          throw new Error(`User with ID ${userId} not found`);
+        }
+        
+        this.users.splice(index, 1);
+        
+        return true;
       }
     },
     
     // Additional utility methods
-    setUserStatus(userId, status) {
-      const user = this.getUserById(userId);
-      
-      if (user) {
-        user.status = status;
-        this.updateUser(user);
+    async setUserActive(userId, isActive) {
+      try {
+        // Update the user active status in Supabase
+        const supabase = useSupabase();
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            is_active: isActive,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+        
+        if (error) throw error;
+        
+        // Update the user status in the local state
+        const user = this.getUserById(userId);
+        
+        if (user) {
+          user.is_active = isActive;
+          user.updated_at = new Date().toISOString();
+        }
+      } catch (error) {
+        console.error(`Failed to update active status for user ${userId}:`, error);
+        
+        // Fallback to local operation
+        const user = this.getUserById(userId);
+        
+        if (user) {
+          user.is_active = isActive;
+          user.updated_at = new Date().toISOString();
+        }
       }
     },
     
-    bulkDeleteUsers(userIds) {
-      userIds.forEach(id => {
+    async setUserDeleted(userId, isDeleted) {
+      try {
+        // Update the user deleted status in Supabase
+        const supabase = useSupabase();
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            is_deleted: isDeleted,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+        
+        if (error) throw error;
+        
+        // Update the user status in the local state
+        const user = this.getUserById(userId);
+        
+        if (user) {
+          user.is_deleted = isDeleted;
+          user.updated_at = new Date().toISOString();
+        }
+      } catch (error) {
+        console.error(`Failed to update deleted status for user ${userId}:`, error);
+        
+        // Fallback to local operation
+        const user = this.getUserById(userId);
+        
+        if (user) {
+          user.is_deleted = isDeleted;
+          user.updated_at = new Date().toISOString();
+        }
+      }
+    },
+    
+    async bulkDeleteUsers(userIds) {
+      for (const id of userIds) {
         try {
-          this.deleteUser(id);
+          await this.deleteUser(id);
         } catch (error) {
           console.error(`Failed to delete user ${id}:`, error);
         }
-      });
+      }
     }
   }
 });

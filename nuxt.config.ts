@@ -20,6 +20,16 @@ export default defineNuxtConfig({
 
   compatibilityDate: "2024-11-27",
 
+  // Runtime config for environment variables
+  runtimeConfig: {
+    // Private keys that are exposed to the server
+    // Public keys that are exposed to the client
+    public: {
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
+    },
+  },
+
   app: {
     head: {
       title: "Mi SPA con Nuxt",

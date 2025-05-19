@@ -139,7 +139,8 @@ const formData = reactive({
   status: props.user.status || "Active",
   address: props.user.address || "",
   notes: props.user.notes || "",
-  createdAt: props.user.createdAt || new Date().toISOString(),
+  created_at:
+    props.user.created_at || props.user.createdAt || new Date().toISOString(),
 });
 
 const errors = reactive({

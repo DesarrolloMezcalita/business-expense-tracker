@@ -328,7 +328,11 @@
             </div>
             <div>
               <h5 class="text-sm font-medium text-gray-500">Created Date</h5>
-              <p>{{ formatDate(viewingUser.createdAt) }}</p>
+              <p>
+                {{
+                  formatDate(viewingUser.created_at || viewingUser.createdAt)
+                }}
+              </p>
             </div>
             <div class="md:col-span-2">
               <h5 class="text-sm font-medium text-gray-500">Address</h5>
@@ -434,7 +438,7 @@ const newUser = ref({
   status: "Active",
   address: "",
   notes: "",
-  createdAt: new Date().toISOString(),
+  created_at: new Date().toISOString(),
 });
 
 const editingUser = ref({
@@ -444,7 +448,7 @@ const editingUser = ref({
   status: "Active",
   address: "",
   notes: "",
-  createdAt: new Date().toISOString(),
+  created_at: new Date().toISOString(),
 });
 const viewingUser = ref({
   id: 0,
@@ -454,7 +458,7 @@ const viewingUser = ref({
   status: "Active",
   address: "",
   notes: "",
-  createdAt: new Date().toISOString(),
+  created_at: new Date().toISOString(),
 });
 const deletingUser = ref({
   id: 0,
@@ -518,7 +522,9 @@ const filteredUsers = computed(() => {
   if (dateFilter.value) {
     const filterDate = new Date(dateFilter.value).setHours(0, 0, 0, 0);
     result = result.filter((user) => {
-      const userDate = new Date(user.createdAt).setHours(0, 0, 0, 0);
+      // Handle both createdAt and created_at field names
+      const dateField = user.created_at || user.createdAt;
+      const userDate = new Date(dateField).setHours(0, 0, 0, 0);
       return userDate === filterDate;
     });
   }
@@ -632,7 +638,7 @@ function addUser(userData) {
     status: "Active",
     address: "",
     notes: "",
-    createdAt: new Date().toISOString(),
+    created_at: new Date().toISOString(),
   };
 }
 
