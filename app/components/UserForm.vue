@@ -44,7 +44,7 @@
         <USelect
           id="role"
           v-model="formData.role"
-          :options="roleOptions"
+          :items="roleOptions"
           @blur="validateField('role')"
           :class="{ 'border-red-500': errors.role }"
         />
@@ -53,47 +53,33 @@
         </p>
       </div>
 
-      <!-- Status Field -->
+      <!-- Password Field -->
       <div class="space-y-2">
-        <label for="status" class="block text-sm font-medium text-gray-700"
-          >Status</label
+        <label for="password" class="block text-sm font-medium text-gray-700"
+          >Password</label
         >
-        <USelect
-          id="status"
-          v-model="formData.status"
-          :options="statusOptions"
-          @blur="validateField('status')"
-          :class="{ 'border-red-500': errors.status }"
+        <UInput
+          id="password"
+          v-model="formData.password"
+          placeholder="Enter password"
+          type="password"
+          @blur="validateField('password')"
+          :class="{ 'border-red-500': errors.password }"
         />
-        <p v-if="errors.status" class="text-red-500 text-xs mt-1">
-          {{ errors.status }}
+        <p v-if="errors.password" class="text-red-500 text-xs mt-1">
+          {{ errors.password }}
         </p>
       </div>
 
-      <!-- Address Field -->
-      <div class="space-y-2 md:col-span-2">
-        <label for="address" class="block text-sm font-medium text-gray-700"
-          >Address</label
+      <!-- Active Status Field -->
+      <div class="space-y-2">
+        <label for="is_active" class="block text-sm font-medium text-gray-700"
+          >Status</label
         >
-        <UTextarea
-          id="address"
-          v-model="formData.address"
-          placeholder="Enter address (optional)"
-          :rows="2"
-        />
-      </div>
-
-      <!-- Notes Field -->
-      <div class="space-y-2 md:col-span-2">
-        <label for="notes" class="block text-sm font-medium text-gray-700"
-          >Notes</label
-        >
-        <UTextarea
-          id="notes"
-          v-model="formData.notes"
-          placeholder="Additional notes (optional)"
-          :rows="3"
-        />
+        <USwitch id="is_active" v-model="formData.is_active">
+          <template #on>Active</template>
+          <template #off>Inactive</template>
+        </USwitch>
       </div>
     </div>
 
@@ -135,8 +121,9 @@ const formData = reactive({
   id: props.user.id || null,
   name: props.user.name || "",
   email: props.user.email || "",
+  password: props.user.password || "",
   role: props.user.role || "User",
-  status: props.user.status || "Active",
+  is_active: props.user.is_active !== undefined ? props.user.is_active : true,
   address: props.user.address || "",
   notes: props.user.notes || "",
   created_at:
@@ -146,21 +133,16 @@ const formData = reactive({
 const errors = reactive({
   name: "",
   email: "",
+  password: "",
   role: "",
-  status: "",
 });
 
 const isSubmitting = ref(false);
 
 const roleOptions = [
   { label: "Admin", value: "Admin" },
-  { label: "User", value: "User" },
+  // { label: "User", value: "User" },
   { label: "Editor", value: "Editor" },
-];
-
-const statusOptions = [
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
 ];
 
 const isFormValid = computed(() => {
@@ -169,11 +151,11 @@ const isFormValid = computed(() => {
     formData.email.trim() !== "" &&
     validateEmail(formData.email) &&
     formData.role !== "" &&
-    formData.status !== "" &&
+    (formData.password !== "" || props.isEditing) &&
     !errors.name &&
     !errors.email &&
-    !errors.role &&
-    !errors.status
+    (!errors.password || props.isEditing) &&
+    !errors.role
   );
 });
 
@@ -194,8 +176,9 @@ function validateField(field) {
     case "role":
       errors.role = formData.role === "" ? "Role is required" : "";
       break;
-    case "status":
-      errors.status = formData.status === "" ? "Status is required" : "";
+    case "password":
+      errors.password =
+        formData.password.trim() === "" ? "Password is required" : "";
       break;
   }
 }
@@ -208,8 +191,8 @@ function validateEmail(email) {
 function validateForm() {
   validateField("name");
   validateField("email");
+  if (!props.isEditing) validateField("password");
   validateField("role");
-  validateField("status");
 
   return isFormValid.value;
 }

@@ -32,7 +32,7 @@
         <USelect
           v-model="roleFilter"
           placeholder="Filter by role"
-          :options="roleOptions"
+          :items="roleOptions"
           @update:model-value="applyFilters"
         />
         <UButton
@@ -64,7 +64,7 @@
           <label class="block text-sm font-medium text-gray-700">Status</label>
           <USelect
             v-model="statusFilter"
-            :options="statusOptions"
+            :items="statusOptions"
             @update:model-value="applyFilters"
           />
         </div>
@@ -82,7 +82,7 @@
           <label class="block text-sm font-medium text-gray-700">Sort By</label>
           <USelect
             v-model="sortOption"
-            :options="sortOptions"
+            :items="sortOptions"
             @update:model-value="applyFilters"
           />
         </div>
@@ -95,12 +95,6 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
               <th
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -145,7 +139,6 @@
               :key="user.id"
               class="hover:bg-gray-50"
             >
-              <td class="px-6 py-4 whitespace-nowrap">{{ user.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -155,10 +148,10 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <UBadge
-                  :color="user.status === 'Active' ? 'green' : 'red'"
-                  :variant="user.status === 'Active' ? 'solid' : 'solid'"
+                  :color="user.is_active ? 'success' : 'error'"
+                  variant="subtle"
                 >
-                  {{ user.status }}
+                  {{ user.is_active ? "Active" : "Inactive" }}
                 </UBadge>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -305,10 +298,6 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 class="text-sm font-medium text-gray-500">ID</h5>
-              <p>{{ viewingUser.id }}</p>
-            </div>
-            <div>
               <h5 class="text-sm font-medium text-gray-500">Role</h5>
               <UBadge
                 :color="getRoleBadgeColor(viewingUser.role)"
@@ -320,10 +309,10 @@
             <div>
               <h5 class="text-sm font-medium text-gray-500">Status</h5>
               <UBadge
-                :color="viewingUser.status === 'Active' ? 'green' : 'red'"
-                :variant="viewingUser.status === 'Active' ? 'solid' : 'solid'"
+                :color="viewingUser.is_active ? 'success' : 'error'"
+                variant="subtle"
               >
-                {{ viewingUser.status }}
+                {{ viewingUser.is_active ? "Active" : "Inactive" }}
               </UBadge>
             </div>
             <div>
@@ -333,14 +322,6 @@
                   formatDate(viewingUser.created_at || viewingUser.createdAt)
                 }}
               </p>
-            </div>
-            <div class="md:col-span-2">
-              <h5 class="text-sm font-medium text-gray-500">Address</h5>
-              <p>{{ viewingUser.address || "Not provided" }}</p>
-            </div>
-            <div class="md:col-span-2">
-              <h5 class="text-sm font-medium text-gray-500">Notes</h5>
-              <p>{{ viewingUser.notes || "No notes available" }}</p>
             </div>
           </div>
         </div>
@@ -434,30 +415,27 @@ const isDeleteModalOpen = ref(false);
 const newUser = ref({
   name: "",
   email: "",
-  role: "User",
-  status: "Active",
-  address: "",
-  notes: "",
+  password: "",
+  role: "Editor",
+  is_active: true,
   created_at: new Date().toISOString(),
 });
 
 const editingUser = ref({
   name: "",
   email: "",
-  role: "User",
-  status: "Active",
-  address: "",
-  notes: "",
+  password: "",
+  role: "Editor",
+  is_active: true,
   created_at: new Date().toISOString(),
 });
 const viewingUser = ref({
   id: 0,
   name: "",
   email: "",
-  role: "User",
-  status: "Active",
-  address: "",
-  notes: "",
+  password: "",
+  role: "Editor",
+  is_active: true,
   created_at: new Date().toISOString(),
 });
 const deletingUser = ref({
@@ -475,14 +453,14 @@ const sort = ref({ column: "id", direction: "asc" });
 const roleOptions = [
   { label: "All Roles", value: null },
   { label: "Admin", value: "Admin" },
-  { label: "User", value: "User" },
+  // { label: "User", value: "User" },
   { label: "Editor", value: "Editor" },
 ];
 
 const statusOptions = [
   { label: "All Statuses", value: null },
-  { label: "Active", value: "Active" },
-  { label: "Inactive", value: "Inactive" },
+  { label: "Active", value: true },
+  { label: "Inactive", value: false },
 ];
 
 const sortOptions = [
@@ -514,8 +492,8 @@ const filteredUsers = computed(() => {
   }
 
   // Apply status filter
-  if (statusFilter.value) {
-    result = result.filter((user) => user.status === statusFilter.value);
+  if (statusFilter.value !== null) {
+    result = result.filter((user) => user.is_active === statusFilter.value);
   }
 
   // Apply date filter
@@ -589,13 +567,11 @@ function resetFilters() {
 function getRoleBadgeColor(role) {
   switch (role) {
     case "Admin":
-      return "blue";
+      return "info";
     case "Editor":
-      return "yellow";
-    case "User":
-      return "gray";
+      return "neutral";
     default:
-      return "gray";
+      return "neutral";
   }
 }
 
@@ -634,10 +610,8 @@ function addUser(userData) {
   newUser.value = {
     name: "",
     email: "",
-    role: "User",
-    status: "Active",
-    address: "",
-    notes: "",
+    role: "Editor",
+    is_active: true,
     created_at: new Date().toISOString(),
   };
 }

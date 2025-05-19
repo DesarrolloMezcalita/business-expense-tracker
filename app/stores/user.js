@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { useSupabase } from '~/utils/supabase';
+import CryptoJS from 'crypto-js';
 
 /**
  * User store for managing users
@@ -44,7 +45,7 @@ export const useUserStore = defineStore('user', {
         const supabase = useSupabase();
         const { data, error } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, name, email, role, is_active, created_at, updated_at')
           .order('id', { ascending: true });
         
         if (error) throw error;
@@ -73,61 +74,53 @@ export const useUserStore = defineStore('user', {
           id: '1',
           name: 'John Doe',
           email: 'john.doe@example.com',
-          password: 'hashed_password_here', // In a real app, this would be properly hashed
           role: 'Admin',
           is_active: true,
-          is_deleted: false,
-          created_at: '2025-01-15T08:30:00.000Z',
-          updated_at: '2025-01-15T08:30:00.000Z'
+          created_at: '2025-01-15T08:30:00.000Z'
         },
         {
           id: '2',
           name: 'Jane Smith',
           email: 'jane.smith@example.com',
-          password: 'hashed_password_here', // In a real app, this would be properly hashed
           role: 'User',
           is_active: true,
-          is_deleted: false,
-          created_at: '2025-02-20T10:15:00.000Z',
-          updated_at: '2025-02-20T10:15:00.000Z'
+          created_at: '2025-02-20T10:15:00.000Z'
         },
         {
           id: '3',
           name: 'Robert Johnson',
           email: 'robert.johnson@example.com',
-          password: 'hashed_password_here', // In a real app, this would be properly hashed
           role: 'Editor',
           is_active: false,
-          is_deleted: false,
-          created_at: '2025-03-10T14:45:00.000Z',
-          updated_at: '2025-03-10T14:45:00.000Z'
+          created_at: '2025-03-10T14:45:00.000Z'
         },
         {
           id: '4',
           name: 'Emily Davis',
           email: 'emily.davis@example.com',
-          password: 'hashed_password_here', // In a real app, this would be properly hashed
           role: 'User',
           is_active: true,
-          is_deleted: false,
-          created_at: '2025-03-25T09:20:00.000Z',
-          updated_at: '2025-03-25T09:20:00.000Z'
+          created_at: '2025-03-25T09:20:00.000Z'
         },
         {
           id: '5',
           name: 'Michael Wilson',
           email: 'michael.wilson@example.com',
-          password: 'hashed_password_here', // In a real app, this would be properly hashed
           role: 'Admin',
           is_active: true,
-          is_deleted: false,
-          created_at: '2025-04-05T11:30:00.000Z',
-          updated_at: '2025-04-05T11:30:00.000Z'
+          created_at: '2025-04-05T11:30:00.000Z'
         }
       ];
       
       this.users = mockUsers;
       console.log('Using mock data as fallback');
+    },
+    
+    // Helper function to hash passwords
+    hashPassword(password) {
+      // Using SHA-256 for hashing with a salt
+      const salt = 'business-expense-tracker-salt'; // In production, use a secure random salt for each user
+      return CryptoJS.SHA256(password + salt).toString();
     },
     
     async addUser(userData) {
@@ -137,7 +130,7 @@ export const useUserStore = defineStore('user', {
         const newUser = {
           name: userData.name,
           email: userData.email,
-          password: userData.password, // In a real app, this would be properly hashed
+          password: this.hashPassword(userData.password), // Hash the password
           role: userData.role,
           is_active: userData.is_active !== undefined ? userData.is_active : true,
           is_deleted: userData.is_deleted !== undefined ? userData.is_deleted : false,
@@ -173,6 +166,7 @@ export const useUserStore = defineStore('user', {
         const newUser = {
           id: newId,
           ...userData,
+          password: this.hashPassword(userData.password), // Hash the password
           created_at: userData.created_at || new Date().toISOString(),
           updated_at: userData.updated_at || new Date().toISOString()
         };
@@ -194,6 +188,11 @@ export const useUserStore = defineStore('user', {
           updated_at: new Date().toISOString()
         };
         
+        // Only update password if it's provided and not empty
+        if (userData.password && userData.password.trim() !== '') {
+          updatedUser.password = this.hashPassword(userData.password);
+        }
+        
         // Update the user in Supabase
         const supabase = useSupabase();
         const { error } = await supabase
@@ -209,6 +208,8 @@ export const useUserStore = defineStore('user', {
         if (index === -1) {
           throw new Error(`User with ID ${userData.id} not found`);
         }
+
+        updatedUser.password = '';
         
         this.users[index] = {
           ...this.users[index],
