@@ -641,4 +641,15 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+// Define page metadata
+definePageMeta({
+  middleware: ["auth"],
+  // Only allow admin and editor roles to access this page
+  validate: async () => {
+    const authStore = useAuthStore();
+    await authStore.checkAuth();
+    return authStore.isAdmin || authStore.isEditor;
+  },
+});
 </script>
