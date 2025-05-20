@@ -41,6 +41,12 @@
             </template>
             <div class="space-y-2">
               <UButton
+                label="Gestor de Gastos"
+                icon="i-heroicons-banknotes"
+                to="/expenses"
+                block
+              />
+              <UButton
                 label="User Management"
                 icon="i-heroicons-user-group"
                 to="/users"
