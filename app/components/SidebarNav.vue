@@ -28,6 +28,16 @@
       />
 
       <UButton
+        to="/branches"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/branches'"
+        icon="i-heroicons-building-office"
+        label="Gestión de Sucursales"
+      />
+
+      <UButton
         to="/users"
         block
         variant="ghost"
