@@ -4,12 +4,12 @@
       <!-- Name Field -->
       <div class="space-y-2">
         <label for="name" class="block text-sm font-medium text-gray-700"
-          >Name</label
+          >Nombre</label
         >
         <UInput
           id="name"
           v-model="formData.name"
-          placeholder="Enter full name"
+          placeholder="Nombre"
           @blur="validateField('name')"
           :class="{ 'border-red-500': errors.name }"
         />
@@ -21,12 +21,12 @@
       <!-- Phone Field -->
       <div class="space-y-2">
         <label for="text" class="block text-sm font-medium text-gray-700"
-          >Phone</label
+          >Teléfono</label
         >
         <UInput
           id="phone"
           v-model="formData.phone"
-          placeholder="Enter phone number"
+          placeholder="Teléfono"
           type="phone"
           @blur="validateField('phone')"
           :class="{ 'border-red-500': errors.phone }"
@@ -39,7 +39,7 @@
       <!-- Active Status Field -->
       <div class="space-y-2">
         <label for="is_active" class="block text-sm font-medium text-gray-700"
-          >Status</label
+          >Estado</label
         >
         <USwitch id="is_active" v-model="formData.is_active">
           <template #on>Active</template>
@@ -51,14 +51,14 @@
     <div class="flex justify-end gap-2 mt-6">
       <UButton
         type="button"
-        label="Cancel"
+        label="Cancelar"
         color="gray"
         variant="outline"
         @click="$emit('cancel')"
       />
       <UButton
         type="submit"
-        :label="isEditing ? 'Update User' : 'Add User'"
+        :label="isEditing ? 'Actualizar Usuario' : 'Agregar Usuario'"
         :loading="isSubmitting"
         :disabled="!isFormValid || isSubmitting"
       />

@@ -1,11 +1,11 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+    <h1 class="text-3xl font-bold mb-6">Mi Perfil</h1>
 
     <UCard class="max-w-2xl mx-auto">
       <template #header>
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Profile Information</h2>
+          <h2 class="text-xl font-semibold">Información del perfil</h2>
           <UBadge :color="userRoleColor" variant="subtle">
             {{ authStore.user?.role }}
           </UBadge>
@@ -17,13 +17,14 @@
       </div>
 
       <form v-else @submit.prevent="updateProfile" class="space-y-6">
-        <UAlert v-if="error" type="danger" class="mb-4">
-          {{ error }}
-        </UAlert>
+        <UAlert v-if="error" :description="error" type="danger" class="mb-4" />
 
-        <UAlert v-if="success" type="success" class="mb-4">
-          {{ success }}
-        </UAlert>
+        <UAlert
+          v-if="success"
+          :description="success"
+          type="success"
+          class="mb-4"
+        />
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -31,7 +32,7 @@
               <UInput
                 id="name"
                 v-model="form.name"
-                placeholder="Your full name"
+                placeholder="Tu nombre"
                 :disabled="loading"
                 required
               />
@@ -44,7 +45,7 @@
                 id="email"
                 v-model="form.email"
                 type="email"
-                placeholder="Your email address"
+                placeholder="Tu correo"
                 :disabled="loading"
                 required
               />
@@ -55,9 +56,9 @@
         <UDivider />
 
         <div class="space-y-6">
-          <h3 class="text-lg font-medium">Change Password</h3>
+          <h3 class="text-lg font-medium">Cambiar contraseña</h3>
           <p class="text-sm text-gray-500">
-            Leave blank if you don't want to change your password
+            Déjelo en blanco si no desea cambiar su contraseña
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -67,7 +68,7 @@
                   id="currentPassword"
                   v-model="form.currentPassword"
                   type="password"
-                  placeholder="Current password"
+                  placeholder="Contraseña actual"
                   :disabled="loading"
                 />
               </UFormGroup>
@@ -79,7 +80,7 @@
                   id="newPassword"
                   v-model="form.newPassword"
                   type="password"
-                  placeholder="New password"
+                  placeholder="Nueva contraseña"
                   :disabled="loading"
                 />
               </UFormGroup>
@@ -91,7 +92,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <UButton variant="outline" @click="resetForm" :disabled="loading">
-            Cancel
+            Cancelar
           </UButton>
 
           <UButton
@@ -100,7 +101,7 @@
             :loading="loading"
             :disabled="loading || !isFormValid"
           >
-            Save Changes
+            Guardar Cambios
           </UButton>
         </div>
       </template>
@@ -144,11 +145,9 @@ const userRoleColor = computed(() => {
     case "Admin":
       return "blue";
     case "Editor":
-      return "yellow";
-    case "User":
-      return "gray";
+      return "neutral";
     default:
-      return "gray";
+      return "neutral";
   }
 });
 

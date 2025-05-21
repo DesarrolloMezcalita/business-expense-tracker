@@ -4,12 +4,12 @@
       <!-- Name Field -->
       <div class="space-y-2">
         <label for="name" class="block text-sm font-medium text-gray-700"
-          >Name</label
+          >Nombre</label
         >
         <UInput
           id="name"
           v-model="formData.name"
-          placeholder="Enter full name"
+          placeholder="Nombre"
           @blur="validateField('name')"
           :class="{ 'border-red-500': errors.name }"
         />
@@ -21,12 +21,12 @@
       <!-- Email Field -->
       <div class="space-y-2">
         <label for="email" class="block text-sm font-medium text-gray-700"
-          >Email</label
+          >Correo</label
         >
         <UInput
           id="email"
           v-model="formData.email"
-          placeholder="Enter email address"
+          placeholder="Correo"
           type="email"
           @blur="validateField('email')"
           :class="{ 'border-red-500': errors.email }"
@@ -39,7 +39,7 @@
       <!-- Role Field -->
       <div class="space-y-2">
         <label for="role" class="block text-sm font-medium text-gray-700"
-          >Role</label
+          >Rol</label
         >
         <USelect
           id="role"
@@ -56,12 +56,12 @@
       <!-- Password Field -->
       <div class="space-y-2">
         <label for="password" class="block text-sm font-medium text-gray-700"
-          >Password</label
+          >Contraseña</label
         >
         <UInput
           id="password"
           v-model="formData.password"
-          placeholder="Enter password"
+          placeholder="Contraseña"
           type="password"
           @blur="validateField('password')"
           :class="{ 'border-red-500': errors.password }"
@@ -74,7 +74,7 @@
       <!-- Active Status Field -->
       <div class="space-y-2">
         <label for="is_active" class="block text-sm font-medium text-gray-700"
-          >Status</label
+          >Estado</label
         >
         <USwitch id="is_active" v-model="formData.is_active">
           <template #on>Active</template>
@@ -86,14 +86,14 @@
     <div class="flex justify-end gap-2 mt-6">
       <UButton
         type="button"
-        label="Cancel"
+        label="Cancelar"
         color="gray"
         variant="outline"
         @click="$emit('cancel')"
       />
       <UButton
         type="submit"
-        :label="isEditing ? 'Update User' : 'Add User'"
+        :label="isEditing ? 'Actualizar Usuario' : 'Agregar Usuario'"
         :loading="isSubmitting"
         :disabled="!isFormValid || isSubmitting"
       />

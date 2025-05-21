@@ -24,7 +24,7 @@
         class="justify-start"
         :active="route.path === '/expenses'"
         icon="i-heroicons-banknotes"
-        label="Gestor de Gastos"
+        label="Gastos"
       />
 
       <UButton
@@ -38,33 +38,13 @@
       />
 
       <UButton
-        to="/branches"
-        block
-        variant="ghost"
-        class="justify-start"
-        :active="route.path === '/branches'"
-        icon="i-heroicons-building-office"
-        label="Gestión de Sucursales"
-      />
-
-      <UButton
-        to="/users"
-        block
-        variant="ghost"
-        class="justify-start"
-        :active="route.path === '/users'"
-        icon="i-heroicons-user-group"
-        label="User Management"
-      />
-
-      <UButton
         to="/supplies"
         block
         variant="ghost"
         class="justify-start"
         :active="route.path === '/supplies'"
         icon="i-heroicons-cube"
-        label="Gestión de Insumos"
+        label="Insumos"
       />
 
       <UButton
@@ -74,7 +54,7 @@
         class="justify-start"
         :active="route.path === '/skus'"
         icon="i-heroicons-tag"
-        label="Gestión de SKUs"
+        label="SKUs"
       />
 
       <UButton
@@ -84,7 +64,27 @@
         class="justify-start"
         :active="route.path === '/categories'"
         icon="i-heroicons-folder"
-        label="Gestión de Categorías"
+        label="Categorías"
+      />
+
+      <UButton
+        to="/branches"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/branches'"
+        icon="i-heroicons-building-office"
+        label="Sucursales"
+      />
+
+      <UButton
+        to="/users"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/users'"
+        icon="i-heroicons-user-group"
+        label="Usuarios"
       />
 
       <UButton
@@ -94,7 +94,7 @@
         class="justify-start"
         :active="route.path === '/profile'"
         icon="i-heroicons-user-circle"
-        label="My Profile"
+        label="Mi Perfil"
       />
 
       <div class="pt-4 mt-4 border-t border-gray-200">

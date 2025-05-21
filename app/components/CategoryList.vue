@@ -152,18 +152,12 @@
             >
               Nombre
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Descripción
-            </th>
-            <th
+            <!-- <th
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Subcategorías
-            </th>
+            </th> -->
             <th
               scope="col"
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -197,16 +191,11 @@
             <td
               class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
             >
-              {{ category.name }}
+              {{ category.nombre }}
             </td>
-            <td class="px-6 py-4 text-sm text-gray-500">
-              <div class="max-w-xs truncate">
-                {{ category.description || "Sin descripción" }}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ category.subcategories ? category.subcategories.length : 0 }}
-            </td>
+            </td> -->
             <td
               class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
             >
@@ -239,7 +228,7 @@
 
                 <!-- Editar -->
                 <button
-                  class="text-blue-500 hover:text-blue-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Editar"
                 >
                   <svg
@@ -259,7 +248,7 @@
 
                 <!-- Eliminar -->
                 <button
-                  class="text-red-500 hover:text-red-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Eliminar"
                 >
                   <svg

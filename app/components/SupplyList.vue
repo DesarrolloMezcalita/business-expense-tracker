@@ -209,22 +209,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ supply.unidad_de_medida }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ supply.supplier }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                :class="{
-                  'bg-green-100 text-green-800': supply.status === 'available',
-                  'bg-yellow-100 text-yellow-800':
-                    supply.status === 'low_stock',
-                  'bg-red-100 text-red-800': supply.status === 'out_of_stock',
-                }"
-              >
-                {{ getStatusText(supply.status) }}
-              </span>
-            </td>
             <td
               class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
             >
@@ -259,7 +243,7 @@
                 <!-- Editar -->
                 <button
                   @click="editSupply(supply.id)"
-                  class="text-blue-500 hover:text-blue-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Editar"
                 >
                   <svg
@@ -280,7 +264,7 @@
                 <!-- Eliminar -->
                 <button
                   @click="confirmDelete(supply.id, supply.name)"
-                  class="text-red-500 hover:text-red-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Eliminar"
                 >
                   <svg
@@ -353,7 +337,7 @@
           :class="[
             'px-3 py-1 rounded-md',
             supplyStore.pagination.page === page
-              ? 'bg-blue-600 text-white'
+              ? 'bg-emerald-600 text-white'
               : 'text-gray-700 hover:bg-gray-100',
           ]"
         >

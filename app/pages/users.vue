@@ -8,10 +8,10 @@
     >
       <template #users>
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-3xl font-bold">User Management</h1>
+          <h1 class="text-3xl font-bold">Usuarios</h1>
           <UButton
             icon="i-heroicons-plus-circle"
-            label="Add User"
+            label="Agregar Usuario"
             @click="isAddUserModalOpen = true"
           />
         </div>
@@ -22,7 +22,7 @@
             <div class="flex">
               <UInput
                 v-model="searchQuery"
-                placeholder="Search by name, email..."
+                placeholder="Buscar por nombre o correo"
                 icon="i-heroicons-magnifying-glass"
                 class="flex-grow"
                 @update:model-value="applyFilters"
@@ -48,7 +48,7 @@
               color="gray"
               variant="ghost"
               @click="resetFilters"
-              label="Reset Filters"
+              label="Restablecer Filtros"
             />
           </div>
         </div>
@@ -57,7 +57,7 @@
         <UCard v-if="isAdvancedFilterOpen" class="mb-6">
           <template #header>
             <div class="flex justify-between items-center">
-              <h3 class="text-lg font-medium">Advanced Filters</h3>
+              <h3 class="text-lg font-medium">Filtros Avanzados</h3>
               <UButton
                 icon="i-heroicons-x-mark"
                 color="gray"
@@ -69,7 +69,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"
-                >Status</label
+                >Estado</label
               >
               <USelect
                 v-model="statusFilter"
@@ -79,11 +79,12 @@
             </div>
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"
-                >Sort By</label
+                >Ordenar Por</label
               >
               <USelect
                 v-model="sortOption"
                 :items="sortOptions"
+                class="w-40"
                 @update:model-value="applyFilters"
               />
             </div>
@@ -100,31 +101,31 @@
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Name
+                    Nombre
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Email
+                    Correo
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Role
+                    Rol
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status
+                    Estado
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Actions
+                    Acciones
                   </th>
                 </tr>
               </thead>
@@ -194,8 +195,8 @@
           <template #footer>
             <div class="flex items-center justify-between">
               <p class="text-sm text-gray-500">
-                Showing {{ paginatedUsers.length }} of
-                {{ filteredUsers.length }} users
+                Mostrando {{ paginatedUsers.length }} de
+                {{ filteredUsers.length }} usuarios
               </p>
               <UPagination
                 v-model="page"
@@ -210,10 +211,10 @@
 
       <template #wa-users>
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-3xl font-bold">WhatsApp User Management</h1>
+          <h1 class="text-3xl font-bold">Usuarios de WhatsApp</h1>
           <UButton
             icon="i-heroicons-plus-circle"
-            label="Add User"
+            label="Agregar Usuario"
             @click="isAddWAUserModalOpen = true"
           />
         </div>
@@ -224,7 +225,7 @@
             <div class="flex">
               <UInput
                 v-model="waSearchQuery"
-                placeholder="Search by name, phone..."
+                placeholder="Buscar por nombre o teléfono"
                 icon="i-heroicons-magnifying-glass"
                 class="flex-grow"
                 @update:model-value="applyWAFilters"
@@ -265,7 +266,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"
-                >Status</label
+                >Estado</label
               >
               <USelect
                 v-model="waStatusFilter"
@@ -275,11 +276,12 @@
             </div>
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700"
-                >Sort By</label
+                >Ordenar Por</label
               >
               <USelect
                 v-model="waSortOption"
                 :items="waSortOptions"
+                class="w-40"
                 @update:model-value="applyWAFilters"
               />
             </div>
@@ -296,25 +298,25 @@
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Name
+                    Nombre
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Phone
+                    Teléfono
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status
+                    Estado
                   </th>
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Actions
+                    Acciones
                   </th>
                 </tr>
               </thead>
@@ -324,7 +326,7 @@
                 </tr>
                 <tr v-else-if="waPaginatedUsers.length === 0">
                   <td colspan="6" class="px-6 py-4 text-center">
-                    No users found
+                    No se encontraron usuarios
                   </td>
                 </tr>
                 <tr
@@ -376,8 +378,8 @@
           <template #footer>
             <div class="flex items-center justify-between">
               <p class="text-sm text-gray-500">
-                Showing {{ waPaginatedUsers.length }} of
-                {{ waFilteredUsers.length }} users
+                Mostrando {{ waPaginatedUsers.length }} de
+                {{ waFilteredUsers.length }} usuarios
               </p>
               <UPagination
                 v-model="waPage"
@@ -395,7 +397,9 @@
     <UModal v-model:open="isAddUserModalOpen" :ui="{ width: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
-          <h3 class="text-lg font-medium" id="add-user-title">Add New User</h3>
+          <h3 class="text-lg font-medium" id="add-user-title">
+            Agregar Nuevo Usuario
+          </h3>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
@@ -424,7 +428,9 @@
     <UModal v-model:open="isEditUserModalOpen" :ui="{ width: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
-          <h3 class="text-lg font-medium" id="edit-user-title">Edit User</h3>
+          <h3 class="text-lg font-medium" id="edit-user-title">
+            Editar Usuario
+          </h3>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
@@ -454,7 +460,9 @@
     <UModal v-model:open="isViewUserModalOpen" :ui="{ width: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
-          <h3 class="text-lg font-medium" id="view-user-title">User Details</h3>
+          <h3 class="text-lg font-medium" id="view-user-title">
+            Detalles de Usuario
+          </h3>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
@@ -488,7 +496,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 class="text-sm font-medium text-gray-500">Role</h5>
+              <h5 class="text-sm font-medium text-gray-500">Rol</h5>
               <UBadge
                 :color="getRoleBadgeColor(viewingUser.role)"
                 variant="subtle"
@@ -497,7 +505,7 @@
               </UBadge>
             </div>
             <div>
-              <h5 class="text-sm font-medium text-gray-500">Status</h5>
+              <h5 class="text-sm font-medium text-gray-500">Estado</h5>
               <UBadge
                 :color="viewingUser.is_active ? 'success' : 'error'"
                 variant="subtle"
@@ -505,14 +513,14 @@
                 {{ viewingUser.is_active ? "Active" : "Inactive" }}
               </UBadge>
             </div>
-            <div>
+            <!-- <div>
               <h5 class="text-sm font-medium text-gray-500">Created Date</h5>
               <p>
                 {{
                   formatDate(viewingUser.created_at || viewingUser.createdAt)
                 }}
               </p>
-            </div>
+            </div> -->
           </div>
         </div>
       </template>
@@ -520,13 +528,13 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <UButton
-            label="Close"
+            label="Cerrar"
             color="gray"
             variant="outline"
             @click="isViewUserModalOpen = false"
           />
           <UButton
-            label="Edit"
+            label="Editar"
             icon="i-heroicons-pencil-square"
             @click="editFromViewModal"
           />
@@ -539,7 +547,7 @@
       <template #header>
         <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium" id="delete-user-title">
-            Confirm Delete
+            Confirmar Eliminación
           </h3>
           <UButton
             icon="i-heroicons-x-mark"
@@ -554,8 +562,9 @@
       <template #body>
         <div aria-describedby="delete-user-description">
           <p id="delete-user-description">
-            Are you sure you want to delete the user "{{ deletingUser?.name }}"?
-            This action cannot be undone.
+            ¿Está seguro que desea eliminar al usuario
+            <strong>{{ deletingUser?.name }}</strong
+            >? Esta acción no se puede deshacer.
           </p>
         </div>
       </template>
@@ -563,13 +572,13 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <UButton
-            label="Cancel"
+            label="Cancelar"
             color="gray"
             variant="outline"
             @click="isDeleteModalOpen = false"
           />
           <UButton
-            label="Delete"
+            label="Eliminar"
             color="red"
             icon="i-heroicons-trash"
             @click="deleteUser"
@@ -582,7 +591,9 @@
     <UModal v-model:open="isAddWAUserModalOpen" :ui="{ width: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
-          <h3 class="text-lg font-medium" id="add-user-title">Add New User</h3>
+          <h3 class="text-lg font-medium" id="add-user-title">
+            Agregar Nuevo Usuario
+          </h3>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
@@ -611,7 +622,9 @@
     <UModal v-model:open="isEditWAUserModalOpen" :ui="{ width: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
-          <h3 class="text-lg font-medium" id="edit-user-title">Edit User</h3>
+          <h3 class="text-lg font-medium" id="edit-user-title">
+            Editar Usuario
+          </h3>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
@@ -642,7 +655,7 @@
       <template #header>
         <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium" id="view-user-title">
-            WhatsApp User Details
+            Detalles de Usuario
           </h3>
           <UButton
             icon="i-heroicons-x-mark"
@@ -677,7 +690,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 class="text-sm font-medium text-gray-500">Status</h5>
+              <h5 class="text-sm font-medium text-gray-500">Estado</h5>
               <UBadge
                 :color="viewingWAUser.is_active ? 'success' : 'error'"
                 variant="subtle"
@@ -685,7 +698,7 @@
                 {{ viewingWAUser.is_active ? "Active" : "Inactive" }}
               </UBadge>
             </div>
-            <div>
+            <!-- <div>
               <h5 class="text-sm font-medium text-gray-500">Created Date</h5>
               <p>
                 {{
@@ -694,7 +707,7 @@
                   )
                 }}
               </p>
-            </div>
+            </div> -->
           </div>
         </div>
       </template>
@@ -702,13 +715,13 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <UButton
-            label="Close"
+            label="Cerrar"
             color="gray"
             variant="outline"
             @click="isViewWAUserModalOpen = false"
           />
           <UButton
-            label="Edit"
+            label="Editar"
             icon="i-heroicons-pencil-square"
             @click="editWAFromViewModal"
           />
@@ -721,7 +734,7 @@
       <template #header>
         <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium" id="delete-user-title">
-            Confirm Delete
+            Confirmar Eliminación
           </h3>
           <UButton
             icon="i-heroicons-x-mark"
@@ -736,9 +749,9 @@
       <template #body>
         <div aria-describedby="delete-user-description">
           <p id="delete-user-description">
-            Are you sure you want to delete the user "{{
-              deletingWAUser?.name
-            }}"? This action cannot be undone.
+            ¿Está seguro que desea eliminar al usuario
+            <strong>{{ deletingWAUser?.name }}</strong
+            >? Esta acción no se puede deshacer.
           </p>
         </div>
       </template>
@@ -746,13 +759,13 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <UButton
-            label="Cancel"
+            label="Cancelar"
             color="gray"
             variant="outline"
             @click="isDeleteWAModalOpen = false"
           />
           <UButton
-            label="Delete"
+            label="Eliminar"
             color="red"
             icon="i-heroicons-trash"
             @click="deleteWAUser"
@@ -868,12 +881,12 @@ const waSort = ref({ column: "id", direction: "asc" });
 
 const tabItems = [
   {
-    label: "Users",
+    label: "Usuarios",
     icon: "i-lucide-user",
     slot: "users",
   },
   {
-    label: "WhatsApp Users",
+    label: "Usuarios de WhatsApp",
     icon: "i-lucide-user",
     slot: "wa-users",
   },
@@ -881,28 +894,28 @@ const tabItems = [
 
 // Filter options
 const roleOptions = [
-  { label: "All Roles", value: null },
+  { label: "Todos los Roles", value: null },
   { label: "Admin", value: "Admin" },
   // { label: "User", value: "User" },
   { label: "Editor", value: "Editor" },
 ];
 
 const statusOptions = [
-  { label: "All Statuses", value: null },
-  { label: "Active", value: true },
-  { label: "Inactive", value: false },
+  { label: "Todos", value: null },
+  { label: "Activo", value: true },
+  { label: "Inactivo", value: false },
 ];
 
 const sortOptions = [
-  { label: "Name (A-Z)", value: { column: "name", direction: "asc" } },
-  { label: "Name (Z-A)", value: { column: "name", direction: "desc" } },
-  { label: "Email (A-Z)", value: { column: "email", direction: "asc" } },
-  { label: "Email (Z-A)", value: { column: "email", direction: "desc" } },
+  { label: "Nombre (A-Z)", value: { column: "name", direction: "asc" } },
+  { label: "Nombre (Z-A)", value: { column: "name", direction: "desc" } },
+  { label: "Correo (A-Z)", value: { column: "email", direction: "asc" } },
+  { label: "Correo (Z-A)", value: { column: "email", direction: "desc" } },
 ];
 
 const waSortOptions = [
-  { label: "Name (A-Z)", value: { column: "name", direction: "asc" } },
-  { label: "Name (Z-A)", value: { column: "name", direction: "desc" } },
+  { label: "Nombre (A-Z)", value: { column: "name", direction: "asc" } },
+  { label: "Nombre (Z-A)", value: { column: "name", direction: "desc" } },
 ];
 
 // Computed properties

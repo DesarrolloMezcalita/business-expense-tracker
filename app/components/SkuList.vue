@@ -176,12 +176,6 @@
             </th>
             <th
               scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              ID Insumo
-            </th>
-            <th
-              scope="col"
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Acciones
@@ -224,9 +218,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ sku.cantidad }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ sku.insumoId }}
-            </td>
             <td
               class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
             >
@@ -261,7 +252,7 @@
                 <!-- Editar -->
                 <button
                   @click="editSku(sku.id)"
-                  class="text-blue-500 hover:text-blue-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Editar"
                 >
                   <svg
@@ -282,7 +273,7 @@
                 <!-- Eliminar -->
                 <button
                   @click="confirmDelete(sku.id, sku.nombre)"
-                  class="text-red-500 hover:text-red-700"
+                  class="text-gray-500 hover:text-gray-700"
                   title="Eliminar"
                 >
                   <svg
@@ -355,7 +346,7 @@
           :class="[
             'px-3 py-1 rounded-md',
             skuStore.pagination.page === page
-              ? 'bg-blue-600 text-white'
+              ? 'bg-emerald-600 text-white'
               : 'text-gray-700 hover:bg-gray-100',
           ]"
         >
