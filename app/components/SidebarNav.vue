@@ -48,6 +48,16 @@
       />
 
       <UButton
+        to="/supplies"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/supplies'"
+        icon="i-heroicons-cube"
+        label="Gestión de Insumos"
+      />
+
+      <UButton
         to="/profile"
         block
         variant="ghost"
