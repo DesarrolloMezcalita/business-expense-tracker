@@ -68,6 +68,16 @@
       />
 
       <UButton
+        to="/categories"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/categories'"
+        icon="i-heroicons-folder"
+        label="Gestión de Categorías"
+      />
+
+      <UButton
         to="/profile"
         block
         variant="ghost"
