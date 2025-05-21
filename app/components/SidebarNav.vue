@@ -58,6 +58,16 @@
       />
 
       <UButton
+        to="/skus"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/skus'"
+        icon="i-heroicons-tag"
+        label="Gestión de SKUs"
+      />
+
+      <UButton
         to="/profile"
         block
         variant="ghost"
