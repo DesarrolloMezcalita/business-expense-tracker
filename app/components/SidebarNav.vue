@@ -28,6 +28,16 @@
       />
 
       <UButton
+        to="/recurring-expenses"
+        block
+        variant="ghost"
+        class="justify-start"
+        :active="route.path === '/recurring-expenses'"
+        icon="i-heroicons-clock"
+        label="Gastos Recurrentes"
+      />
+
+      <UButton
         to="/branches"
         block
         variant="ghost"
