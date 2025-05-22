@@ -128,6 +128,8 @@ export const useSupplyStore = defineStore('supply', {
     async updateSupply(id, updates) {
       this.loading = true;
       this.error = null;
+
+      delete updates.id;
       
       try {
         const supabase = useSupabase();

@@ -20,28 +20,20 @@
           />
         </div>
 
-        <!-- Categoría -->
+        <!-- Tipo -->
         <div>
           <label
             for="category"
             class="block text-sm font-medium text-gray-700 mb-1"
-            >Categoría</label
+            >Tipo</label
           >
-          <select
+          <input
             id="category"
             v-model="form.tipo"
+            type="text"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          >
-            <option value="" disabled>Seleccionar tipo</option>
-            <option
-              v-for="category in supplyStore.categories"
-              :key="category"
-              :value="category"
-            >
-              {{ category }}
-            </option>
-          </select>
+          />
         </div>
 
         <!-- Unidad -->

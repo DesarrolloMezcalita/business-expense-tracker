@@ -16,27 +16,11 @@
           </label>
           <input
             id="name"
-            v-model="form.name"
+            v-model="form.nombre"
             type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
             required
           />
-        </div>
-
-        <!-- Descripción -->
-        <div>
-          <label
-            for="description"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Descripción
-          </label>
-          <textarea
-            id="description"
-            v-model="form.description"
-            rows="3"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
         </div>
       </div>
 
@@ -45,13 +29,13 @@
         <button
           type="button"
           @click="$emit('cancel')"
-          class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           Cancelar
         </button>
         <button
           type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           :disabled="categoryStore.loading"
         >
           {{
@@ -84,8 +68,7 @@ const categoryStore = useCategoryStore();
 const isEditing = computed(() => !!props.categoryId);
 
 const form = ref({
-  name: "",
-  description: "",
+  nombre: "",
 });
 
 onMounted(async () => {
@@ -93,8 +76,7 @@ onMounted(async () => {
     await categoryStore.fetchCategory(props.categoryId);
     if (categoryStore.category) {
       form.value = {
-        name: categoryStore.category.name,
-        description: categoryStore.category.description || "",
+        nombre: categoryStore.category.nombre,
       };
     }
   }
