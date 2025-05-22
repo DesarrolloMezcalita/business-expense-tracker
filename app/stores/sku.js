@@ -115,7 +115,9 @@ export const useSkuStore = defineStore('sku', {
     async updateSku(id, updates) {
       this.loading = true;
       this.error = null;
-      
+
+      delete updates.id;
+
       try {
         const supabase = useSupabase();
         const { data, error } = await supabase

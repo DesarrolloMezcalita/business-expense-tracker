@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">Gestión de Sucursales</h1>
+      <h1 class="text-3xl font-bold">Sucursales</h1>
       <UButton
         icon="i-heroicons-plus-circle"
         label="Agregar Sucursal"
@@ -61,6 +61,7 @@
           <USelect
             v-model="sortOption"
             :items="sortOptions"
+            class="w-40"
             @update:model-value="applyFilters"
           />
         </div>
@@ -380,14 +381,6 @@ const sort = ref({ column: "id", direction: "asc" });
 const sortOptions = [
   { label: "Nombre (A-Z)", value: { column: "nombre", direction: "asc" } },
   { label: "Nombre (Z-A)", value: { column: "nombre", direction: "desc" } },
-  {
-    label: "Fecha (Más reciente)",
-    value: { column: "created_at", direction: "desc" },
-  },
-  {
-    label: "Fecha (Más antigua)",
-    value: { column: "created_at", direction: "asc" },
-  },
 ];
 
 // Computed properties

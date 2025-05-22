@@ -19,7 +19,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Buscar por código, nombre o descripción..."
+            placeholder="Buscar por sku o proveedor"
             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             @input="debounceSearch"
           />
@@ -109,26 +109,7 @@
               <option value="proveedor">Proveedor</option>
               <option value="unidad_de_medida">Unidad de Medida</option>
               <option value="cantidad">Cantidad</option>
-              <option value="insumoId">ID Insumo</option>
-              <option value="created_at">Fecha de creación</option>
-            </select>
-          </div>
-
-          <!-- Orden (ascendente/descendente) -->
-          <div>
-            <label
-              for="sort-order"
-              class="block text-sm font-medium text-gray-700 mb-1"
-              >Orden</label
-            >
-            <select
-              id="sort-order"
-              v-model="filters.sortOrder"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @change="applyFilters"
-            >
-              <option value="asc">Ascendente</option>
-              <option value="desc">Descendente</option>
+              <!-- <option value="insumoId">ID Insumo</option> -->
             </select>
           </div>
 
@@ -445,26 +426,6 @@
                 <p class="mt-1 text-base">{{ skuStore.sku.insumoId }}</p>
               </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 class="text-sm font-medium text-gray-500">
-                  Fecha de creación
-                </h3>
-                <p class="mt-1 text-base">
-                  {{ formatDate(skuStore.sku.created_at) }}
-                </p>
-              </div>
-
-              <div>
-                <h3 class="text-sm font-medium text-gray-500">
-                  Última actualización
-                </h3>
-                <p class="mt-1 text-base">
-                  {{ formatDate(skuStore.sku.updated_at) }}
-                </p>
-              </div>
-            </div>
           </div>
 
           <div v-else class="py-4 text-center text-gray-500">
@@ -563,7 +524,7 @@ const editingSkuId = ref(null);
 const deleteItemId = ref(null);
 const deleteItemName = ref("");
 const filters = ref({
-  sortBy: "created_at",
+  sortBy: "sku",
   sortOrder: "desc",
 });
 

@@ -73,22 +73,29 @@
           />
         </div>
 
-        <!-- Insumo ID -->
+        <!-- Insumo (Dropdown) -->
         <div>
           <label
             for="insumoId"
             class="block text-sm font-medium text-gray-700 mb-1"
           >
-            ID de Insumo
+            Insumo
           </label>
-          <input
+          <select
             id="insumoId"
-            v-model.number="form.insumoId"
-            type="number"
-            min="1"
+            v-model="form.insumoId"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          />
+          >
+            <option value="" disabled>Seleccionar insumo</option>
+            <option
+              v-for="insumo in supplyStore.supplies"
+              :key="insumo.id"
+              :value="insumo.id"
+            >
+              {{ insumo.nombre }} ({{ insumo.tipo }})
+            </option>
+          </select>
         </div>
       </div>
 
@@ -103,7 +110,7 @@
         </button>
         <button
           type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           :disabled="skuStore.loading"
         >
           {{
@@ -122,6 +129,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useSkuStore } from "~/stores/sku";
+import { useSupplyStore } from "~/stores/supply";
 
 const props = defineProps({
   skuId: {
@@ -132,6 +140,7 @@ const props = defineProps({
 
 const emit = defineEmits(["saved", "cancel"]);
 const skuStore = useSkuStore();
+const supplyStore = useSupplyStore();
 
 const isEditing = computed(() => !!props.skuId);
 
@@ -140,10 +149,13 @@ const form = ref({
   proveedor: "",
   unidad_de_medida: "",
   cantidad: 0,
-  insumoId: 0,
+  insumoId: "",
 });
 
 onMounted(async () => {
+  // Cargar la lista de insumos
+  await supplyStore.fetchSupplies();
+
   if (props.skuId) {
     await skuStore.fetchSku(props.skuId);
     if (skuStore.sku) {
