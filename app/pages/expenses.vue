@@ -17,6 +17,21 @@
 
     <!-- Modal de formulario de gastos -->
     <UModal v-model:open="showForm">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium">
+            {{ expense ? "Editar Gasto" : "Nuevo Gasto" }}
+          </h3>
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="gray"
+            variant="ghost"
+            @click="cancelForm"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+
       <template #body>
         <ExpenseForm
           :expense="currentExpense"
@@ -28,6 +43,17 @@
 
     <!-- Modal de detalles de gasto -->
     <UModal v-model:open="showDetail">
+      <template #header>
+        <div class="flex items-center justify-between w-full">
+          <h3 class="text-lg font-medium">Detalles del Gasto</h3>
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-x-mark"
+            @click="closeDetail"
+          />
+        </div>
+      </template>
       <template #body>
         <ExpenseDetail
           :expense="currentExpense"

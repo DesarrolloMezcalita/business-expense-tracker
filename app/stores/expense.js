@@ -137,7 +137,10 @@ export const useExpenseStore = defineStore('expense', {
         
         let query = supabase
           .from('compras_gastos')
-          .select('*')
+          .select(`
+            *,
+            items:compra_gasto_detalles(*)
+          `)
           .order('fecha', { ascending: false });
         
         const { data, error } = await query;
@@ -179,7 +182,10 @@ export const useExpenseStore = defineStore('expense', {
         
         const { data, error } = await supabase
           .from('compras_gastos')
-          .select('*')
+          .select(`
+            *,
+            items:compra_gasto_detalles(*)
+          `)
           .eq('id', id)
           .single();
         
@@ -228,28 +234,43 @@ export const useExpenseStore = defineStore('expense', {
         const supabase = useSupabase();
         const authStore = useAuthStore();
         
+        // Extraer los items del gasto
+        const { items, ...expenseData } = expense;
+        
         // Add user_id to the expense
         const newExpense = {
-          ...expense,
+          ...expenseData,
           user_id: authStore.user?.id || 'user-id-1'
         };
         
-        const { data, error } = await supabase
+        // Iniciar una transacción para crear el gasto y sus detalles
+        // Primero, crear el gasto
+        const { data: createdExpense, error: expenseError } = await supabase
           .from('compras_gastos')
           .insert(newExpense)
           .select()
           .single();
         
-        if (error) {
-          console.warn('Error creating expense in Supabase, using mock data:', error);
+        if (expenseError) {
+          console.warn('Error creating expense in Supabase, using mock data:', expenseError);
           
           // Crear un nuevo gasto con datos de prueba
           const mockExpense = {
             ...newExpense,
             id: `mock-${Date.now()}`,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            items: []
           };
+          
+          // Si hay items, agregarlos al mock
+          if (items && items.length > 0) {
+            mockExpense.items = items.map((item, index) => ({
+              ...item,
+              id: `mock-item-${Date.now()}-${index}`,
+              expenseId: mockExpense.id
+            }));
+          }
           
           // Agregar al estado local
           this.expenses.unshift(mockExpense);
@@ -257,11 +278,40 @@ export const useExpenseStore = defineStore('expense', {
           
           return mockExpense;
         } else {
+          // Si el gasto se creó correctamente, crear los detalles
+          let itemsData = [];
+          
+          if (items && items.length > 0) {
+            // Preparar los items con el ID del gasto
+            const itemsToInsert = items.map(item => ({
+              ...item,
+              expense_id: createdExpense.id
+            }));
+            
+            // Insertar los items
+            const { data: createdItems, error: itemsError } = await supabase
+              .from('compra_gasto_detalles')
+              .insert(itemsToInsert)
+              .select();
+            
+            if (itemsError) {
+              console.warn('Error creating expense items:', itemsError);
+            } else {
+              itemsData = createdItems;
+            }
+          }
+          
+          // Crear el objeto completo con los items
+          const completeExpense = {
+            ...createdExpense,
+            items: itemsData
+          };
+          
           // Agregar al estado local
-          this.expenses.unshift(data);
+          this.expenses.unshift(completeExpense);
           this.pagination.total++;
           
-          return data;
+          return completeExpense;
         }
       } catch (error) {
         this.error = error.message;
@@ -279,15 +329,19 @@ export const useExpenseStore = defineStore('expense', {
       try {
         const supabase = useSupabase();
         
-        const { data, error } = await supabase
+        // Extraer los items del gasto
+        const { items, ...expenseData } = updates;
+        
+        // Actualizar el gasto principal
+        const { data: updatedExpense, error: expenseError } = await supabase
           .from('compras_gastos')
-          .update(updates)
+          .update(expenseData)
           .eq('id', id)
           .select()
           .single();
         
-        if (error) {
-          console.warn(`Error updating expense with ID ${id} in Supabase, using mock data:`, error);
+        if (expenseError) {
+          console.warn(`Error updating expense with ID ${id} in Supabase, using mock data:`, expenseError);
           
           // Buscar el gasto en el estado local
           const index = this.expenses.findIndex(e => e.id === id);
@@ -299,9 +353,14 @@ export const useExpenseStore = defineStore('expense', {
           // Actualizar el gasto en el estado local
           const updatedExpense = {
             ...this.expenses[index],
-            ...updates,
+            ...expenseData,
             updated_at: new Date().toISOString()
           };
+          
+          // Actualizar los items si existen
+          if (items) {
+            updatedExpense.items = items;
+          }
           
           this.expenses[index] = updatedExpense;
           
@@ -311,17 +370,51 @@ export const useExpenseStore = defineStore('expense', {
           
           return updatedExpense;
         } else {
+          let itemsData = [];
+          
+          // Si hay items para actualizar
+          if (items && items.length > 0) {
+            // Primero, eliminar todos los items existentes
+            await supabase
+              .from('compra_gasto_detalles')
+              .delete()
+              .eq('expense_id', id);
+            
+            // Luego, insertar los nuevos items
+            const itemsToInsert = items.map(item => ({
+              ...item,
+              expense_id: id
+            }));
+            
+            const { data: createdItems, error: itemsError } = await supabase
+              .from('compra_gasto_detalles')
+              .insert(itemsToInsert)
+              .select();
+            
+            if (itemsError) {
+              console.warn('Error updating expense items:', itemsError);
+            } else {
+              itemsData = createdItems;
+            }
+          }
+          
+          // Crear el objeto completo con los items actualizados
+          const completeExpense = {
+            ...updatedExpense,
+            items: itemsData
+          };
+          
           // Actualizar en el estado local
           const index = this.expenses.findIndex(e => e.id === id);
           if (index !== -1) {
-            this.expenses[index] = data;
+            this.expenses[index] = completeExpense;
           }
           
           if (this.currentExpense && this.currentExpense.id === id) {
-            this.currentExpense = data;
+            this.currentExpense = completeExpense;
           }
           
-          return data;
+          return completeExpense;
         }
       } catch (error) {
         this.error = error.message;
@@ -339,6 +432,13 @@ export const useExpenseStore = defineStore('expense', {
       try {
         const supabase = useSupabase();
         
+        // Primero eliminar los detalles del gasto
+        await supabase
+          .from('compra_gasto_detalles')
+          .delete()
+          .eq('expense_id', id);
+        
+        // Luego eliminar el gasto principal
         const { error } = await supabase
           .from('compras_gastos')
           .delete()

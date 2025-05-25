@@ -1,3 +1,5 @@
+import type { ExpenseItem } from "./expense-item";
+
 export interface Expense {
   id: number;
   fecha: string; // Date format as string (e.g. "2025-05-19")
@@ -12,4 +14,5 @@ export interface Expense {
   validado: boolean;
   formaPago: string;
   categoriaId: number;
+  items?: ExpenseItem[]; // Detalles del gasto (insumos o conceptos)
 }

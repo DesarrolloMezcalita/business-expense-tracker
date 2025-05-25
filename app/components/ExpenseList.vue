@@ -455,9 +455,9 @@
     </div>
 
     <!-- Modal de confirmación de eliminación -->
-    <UModal v-model="showDeleteModal">
+    <UModal v-model:open="showDeleteModal">
       <template #header>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium">Confirmar eliminación</h3>
           <UButton
             color="gray"
