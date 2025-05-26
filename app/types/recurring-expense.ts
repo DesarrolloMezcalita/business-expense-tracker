@@ -1,14 +1,14 @@
 export interface RecurringExpense {
   id: number;
   nombre: string;
-  descripcion?: string;
+  descripcion?: string; // Optional, not used in form
   monto: number;
   frecuencia: string; // 'mensual', 'semanal', 'trimestral', 'anual', etc.
   dia_cobro?: number; // día del mes para cobros mensuales/anuales, día de la semana para semanales
-  fecha_inicio: string; // Date format as string (e.g. "2025-05-19")
+  fecha_inicio?: string; // Date format as string, auto-generated
   fecha_fin?: string; // Date format as string, optional
   proveedor: string;
-  categoriaId: number;
+  categoriaId?: number; // Optional, default value used
   formaPago: string;
   activo: boolean;
   created_at: string; // ISO timestamp string

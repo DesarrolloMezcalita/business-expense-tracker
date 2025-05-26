@@ -16,17 +16,14 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
     },
     filters: {
       search: '',
-      category: '',
       status: '',
       frequency: '',
-      dateFrom: '',
-      dateTo: '',
       minAmount: '',
       maxAmount: '',
       active: true
     },
     sorting: {
-      field: 'fecha_inicio',
+      field: 'created_at',
       descending: true
     }
   }),
@@ -38,16 +35,9 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
       
       if (state.filters.search) {
         const searchLower = state.filters.search.toLowerCase();
-        filtered = filtered.filter(expense => 
+        filtered = filtered.filter(expense =>
           expense.nombre.toLowerCase().includes(searchLower) ||
-          expense.proveedor.toLowerCase().includes(searchLower) ||
-          (expense.descripcion && expense.descripcion.toLowerCase().includes(searchLower))
-        );
-      }
-      
-      if (state.filters.category) {
-        filtered = filtered.filter(expense => 
-          expense.categoriaId === parseInt(state.filters.category)
+          expense.proveedor.toLowerCase().includes(searchLower)
         );
       }
       
@@ -60,20 +50,6 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
       if (state.filters.active !== null && state.filters.active !== undefined) {
         filtered = filtered.filter(expense => 
           expense.activo === state.filters.active
-        );
-      }
-      
-      if (state.filters.dateFrom) {
-        const fromDate = new Date(state.filters.dateFrom);
-        filtered = filtered.filter(expense => 
-          new Date(expense.fecha_inicio) >= fromDate
-        );
-      }
-      
-      if (state.filters.dateTo) {
-        const toDate = new Date(state.filters.dateTo);
-        filtered = filtered.filter(expense => 
-          new Date(expense.fecha_inicio) <= toDate
         );
       }
       
@@ -99,7 +75,7 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
         if (field === 'monto') {
           valueA = parseFloat(valueA);
           valueB = parseFloat(valueB);
-        } else if (field === 'fecha_inicio' || field === 'fecha_fin') {
+        } else if (field === 'created_at' || field === 'updated_at') {
           valueA = new Date(valueA || '9999-12-31').getTime();
           valueB = new Date(valueB || '9999-12-31').getTime();
         } else if (typeof valueA === 'string') {
@@ -129,11 +105,6 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
       return Math.ceil(state.pagination.total / state.pagination.limit);
     },
     
-    categories: (state) => {
-      const categories = new Set(state.recurringExpenses.map(expense => expense.categoriaId));
-      return Array.from(categories);
-    },
-    
     frequencies: (state) => {
       const frequencies = new Set(state.recurringExpenses.map(expense => expense.frecuencia));
       return Array.from(frequencies);
@@ -151,7 +122,7 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
         let query = supabase
           .from('gastos_recurrentes')
           .select('*')
-          .order('fecha_inicio', { ascending: false });
+          .order('created_at', { ascending: false });
         
         const { data, error } = await query;
         
@@ -240,6 +211,10 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
         // Add user_id to the recurring expense
         const newRecurringExpense = {
           ...recurringExpense,
+          categoriaId: 1, // Default category ID
+          descripcion: '', // Empty description
+          fecha_inicio: new Date().toISOString().split("T")[0], // Current date
+          fecha_fin: null, // No end date
           user_id: authStore.user?.id
         };
         
@@ -367,17 +342,14 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
     clearFilters() {
       this.filters = {
         search: '',
-        category: '',
         status: '',
         frequency: '',
-        dateFrom: '',
-        dateTo: '',
         minAmount: '',
         maxAmount: '',
         active: true
       };
       this.sorting = {
-        field: 'fecha_inicio',
+        field: 'created_at',
         descending: true
       };
       this.pagination.page = 1;

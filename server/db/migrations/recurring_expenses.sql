@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS gastos_recurrentes (
   id SERIAL PRIMARY KEY,
   nombre VARCHAR(255) NOT NULL,
-  descripcion TEXT,
   monto DECIMAL(10, 2) NOT NULL,
   frecuencia VARCHAR(50) NOT NULL, -- 'mensual', 'semanal', 'trimestral', 'anual', etc.
   dia_cobro INTEGER, -- día del mes para cobros mensuales/anuales, día de la semana para semanales

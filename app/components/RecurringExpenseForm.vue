@@ -3,20 +3,20 @@
     <UForm :state="form" @submit="onSubmit">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Nombre -->
-        <UFormGroup label="Nombre" name="nombre" required>
+        <UFormField label="Nombre" name="nombre" required>
           <UInput
             v-model="form.nombre"
             placeholder="Nombre del gasto recurrente"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Proveedor -->
-        <UFormGroup label="Proveedor" name="proveedor" required>
+        <UFormField label="Proveedor" name="proveedor" required>
           <UInput v-model="form.proveedor" placeholder="Nombre del proveedor" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Monto -->
-        <UFormGroup label="Monto" name="monto" required>
+        <UFormField label="Monto" name="monto" required>
           <UInput
             v-model="form.monto"
             type="number"
@@ -24,28 +24,19 @@
             min="0"
             placeholder="0.00"
           />
-        </UFormGroup>
-
-        <!-- Categoría -->
-        <UFormGroup label="Categoría" name="categoriaId" required>
-          <USelect
-            v-model="form.categoriaId"
-            :options="categoryOptions"
-            placeholder="Seleccionar categoría"
-          />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Frecuencia -->
-        <UFormGroup label="Frecuencia" name="frecuencia" required>
+        <UFormField label="Frecuencia" name="frecuencia" required>
           <USelect
             v-model="form.frecuencia"
             :options="frecuenciaOptions"
             placeholder="Seleccionar frecuencia"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Día de cobro -->
-        <UFormGroup
+        <UFormField
           label="Día de cobro"
           name="dia_cobro"
           :required="isDiaCobro"
@@ -59,59 +50,28 @@
             :placeholder="diaCobro.placeholder"
             :disabled="!isDiaCobro"
           />
-        </UFormGroup>
-
-        <!-- Fecha de inicio -->
-        <UFormGroup label="Fecha de inicio" name="fecha_inicio" required>
-          <UInput v-model="form.fecha_inicio" type="date" />
-        </UFormGroup>
-
-        <!-- Fecha de fin -->
-        <UFormGroup
-          label="Fecha de fin"
-          name="fecha_fin"
-          description="Dejar en blanco si no tiene fecha de finalización"
-        >
-          <UInput
-            v-model="form.fecha_fin"
-            type="date"
-            :min="form.fecha_inicio"
-          />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Forma de pago -->
-        <UFormGroup label="Forma de pago" name="formaPago" required>
+        <UFormField label="Forma de pago" name="formaPago" required>
           <USelect
             v-model="form.formaPago"
-            :options="formaPagoOptions"
+            :items="formaPagoOptions"
             placeholder="Seleccionar forma de pago"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Sucursal -->
-        <UFormGroup label="Sucursal" name="sucursalId" required>
+        <UFormField label="Sucursal" name="sucursalId" required>
           <USelect
             v-model="form.sucursalId"
-            :options="branchOptions"
+            :items="branchOptions"
             placeholder="Seleccionar sucursal"
           />
-        </UFormGroup>
-
-        <!-- Descripción -->
-        <UFormGroup
-          label="Descripción"
-          name="descripcion"
-          class="md:col-span-2"
-        >
-          <UTextarea
-            v-model="form.descripcion"
-            placeholder="Descripción o notas adicionales"
-            rows="3"
-          />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Estado -->
-        <UFormGroup label="Estado" name="activo" class="md:col-span-2">
+        <UFormField label="Estado" name="activo" class="md:col-span-2">
           <UToggle
             v-model="form.activo"
             :on-icon="{ icon: 'i-heroicons-check', class: 'text-white' }"
@@ -124,7 +84,7 @@
               <span class="text-xs">Inactivo</span>
             </template>
           </UToggle>
-        </UFormGroup>
+        </UFormField>
       </div>
 
       <div class="flex justify-end space-x-2 mt-6">
@@ -162,16 +122,6 @@ const props = defineProps({
 const emit = defineEmits(["submit", "cancel"]);
 
 // Opciones para los selects
-const categoryOptions = [
-  { label: "Alimentación", value: 1 },
-  { label: "Transporte", value: 2 },
-  { label: "Alojamiento", value: 3 },
-  { label: "Material de oficina", value: 4 },
-  { label: "Software", value: 5 },
-  { label: "Equipamiento", value: 6 },
-  { label: "Servicios", value: 7 },
-  { label: "Marketing", value: 8 },
-];
 
 const frecuenciaOptions = FRECUENCIAS.map((f) => ({
   label: f.label,
@@ -196,14 +146,10 @@ const branchOptions = [
 // Estado del formulario
 const form = ref({
   nombre: "",
-  descripcion: "",
   monto: "",
   frecuencia: "",
   dia_cobro: "",
-  fecha_inicio: "",
-  fecha_fin: "",
   proveedor: "",
-  categoriaId: "",
   formaPago: "",
   sucursalId: "",
   activo: true,
@@ -263,14 +209,10 @@ watch(
       // Llenar el formulario con los datos del gasto recurrente
       form.value = {
         nombre: newExpense.nombre || "",
-        descripcion: newExpense.descripcion || "",
         monto: newExpense.monto || "",
         frecuencia: newExpense.frecuencia || "",
         dia_cobro: newExpense.dia_cobro || "",
-        fecha_inicio: newExpense.fecha_inicio || "",
-        fecha_fin: newExpense.fecha_fin || "",
         proveedor: newExpense.proveedor || "",
-        categoriaId: newExpense.categoriaId || "",
         formaPago: newExpense.formaPago || "",
         sucursalId: newExpense.sucursalId || "",
         activo: newExpense.activo !== undefined ? newExpense.activo : true,
@@ -279,14 +221,10 @@ watch(
       // Resetear el formulario
       form.value = {
         nombre: "",
-        descripcion: "",
         monto: "",
         frecuencia: "",
         dia_cobro: "",
-        fecha_inicio: "",
-        fecha_fin: "",
         proveedor: "",
-        categoriaId: "",
         formaPago: "",
         sucursalId: "",
         activo: true,
@@ -304,8 +242,6 @@ const onSubmit = () => {
     !form.value.proveedor ||
     !form.value.monto ||
     !form.value.frecuencia ||
-    !form.value.fecha_inicio ||
-    !form.value.categoriaId ||
     !form.value.formaPago ||
     !form.value.sucursalId
   ) {
@@ -321,9 +257,10 @@ const onSubmit = () => {
   const formData = {
     ...form.value,
     monto: parseFloat(form.value.monto),
-    categoriaId: parseInt(form.value.categoriaId),
+    categoriaId: 1, // Default category ID
     sucursalId: parseInt(form.value.sucursalId),
     dia_cobro: form.value.dia_cobro ? parseInt(form.value.dia_cobro) : null,
+    fecha_inicio: new Date().toISOString().split("T")[0], // Current date as default
   };
 
   // Emitir evento con los datos del formulario
@@ -332,10 +269,6 @@ const onSubmit = () => {
 
 // Inicialización
 onMounted(() => {
-  // Establecer fecha de inicio por defecto si es un nuevo gasto
-  if (!isEditing.value && !form.value.fecha_inicio) {
-    const today = new Date();
-    form.value.fecha_inicio = today.toISOString().split("T")[0];
-  }
+  // No need to set fecha_inicio anymore as it's handled in onSubmit
 });
 </script>

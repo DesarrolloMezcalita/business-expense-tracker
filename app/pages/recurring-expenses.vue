@@ -10,9 +10,9 @@
       />
     </div>
 
-    <UModal v-model="showForm" :ui="{ width: 'max-w-3xl' }">
+    <UModal v-model:open="showForm" :ui="{ width: 'max-w-3xl' }">
       <template #header>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium">
             {{
               isEditing ? "Editar Gasto Recurrente" : "Nuevo Gasto Recurrente"
@@ -37,7 +37,7 @@
       </template>
     </UModal>
 
-    <UModal v-model="showDetail" :ui="{ width: 'max-w-4xl' }">
+    <UModal v-model:open="showDetail" :ui="{ width: 'max-w-4xl' }">
       <template #body v-if="currentExpense">
         <RecurringExpenseDetail
           :expense="currentExpense"
