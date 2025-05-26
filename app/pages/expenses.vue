@@ -108,6 +108,20 @@ const createExpense = () => {
 };
 
 const editExpense = (expense) => {
+  expense.items = expense.items.map((item) => ({
+    concepto: item.nombre,
+    nombre: item.nombre, // Para compatibilidad con la base de datos
+    cantidad: item.cantidad,
+    precioUnitario: item.precio_unitario,
+    precio_unitario: item.precio_unitario, // Para compatibilidad con la base de datos
+    subtotal: item.subtotal,
+    compraGastoId: item.compraGastoId, // Se actualizará cuando se cree el gasto
+    descuento: item.descuento,
+    impuesto: item.impuesto,
+    total: item.total,
+    anomalia: item.anomalia,
+  }));
+
   currentExpense.value = expense;
   showForm.value = true;
   showDetail.value = false;

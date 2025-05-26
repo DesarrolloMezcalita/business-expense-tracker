@@ -232,15 +232,13 @@ export const useExpenseStore = defineStore('expense', {
       
       try {
         const supabase = useSupabase();
-        const authStore = useAuthStore();
         
         // Extraer los items del gasto
         const { items, ...expenseData } = expense;
         
         // Add user_id to the expense
         const newExpense = {
-          ...expenseData,
-          user_id: authStore.user?.id || 'user-id-1'
+          ...expenseData
         };
         
         // Iniciar una transacción para crear el gasto y sus detalles
@@ -259,7 +257,6 @@ export const useExpenseStore = defineStore('expense', {
             ...newExpense,
             id: `mock-${Date.now()}`,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
             items: []
           };
           
@@ -283,10 +280,14 @@ export const useExpenseStore = defineStore('expense', {
           
           if (items && items.length > 0) {
             // Preparar los items con el ID del gasto
-            const itemsToInsert = items.map(item => ({
+            const itemsToInsert = items.map(item => {              
+              return {
               ...item,
-              expense_id: createdExpense.id
-            }));
+              compraGastoId: createdExpense.id
+            }
+          });
+
+
             
             // Insertar los items
             const { data: createdItems, error: itemsError } = await supabase
@@ -354,7 +355,6 @@ export const useExpenseStore = defineStore('expense', {
           const updatedExpense = {
             ...this.expenses[index],
             ...expenseData,
-            updated_at: new Date().toISOString()
           };
           
           // Actualizar los items si existen
@@ -378,12 +378,12 @@ export const useExpenseStore = defineStore('expense', {
             await supabase
               .from('compra_gasto_detalles')
               .delete()
-              .eq('expense_id', id);
+              .eq('compraGastoId', id);
             
             // Luego, insertar los nuevos items
             const itemsToInsert = items.map(item => ({
               ...item,
-              expense_id: id
+              compraGastoId: id
             }));
             
             const { data: createdItems, error: itemsError } = await supabase
@@ -436,7 +436,7 @@ export const useExpenseStore = defineStore('expense', {
         await supabase
           .from('compra_gasto_detalles')
           .delete()
-          .eq('expense_id', id);
+          .eq('compraGastoId', id);
         
         // Luego eliminar el gasto principal
         const { error } = await supabase

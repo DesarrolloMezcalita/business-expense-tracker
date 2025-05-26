@@ -1,10 +1,31 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
-    <UFormField label="Proveedor" name="proveedor">
-      <UInput
-        v-model="form.proveedor"
-        placeholder="Nombre del proveedor"
-        :error="errors.proveedor"
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <UFormField label="Fecha" name="fecha">
+        <UInput
+          v-model="form.fecha"
+          type="date"
+          :error="errors.fecha"
+          required
+        />
+      </UFormField>
+      <UFormField label="Proveedor" name="proveedor">
+        <UInput
+          v-model="form.proveedor"
+          placeholder="Nombre del proveedor"
+          :error="errors.proveedor"
+          required
+        />
+      </UFormField>
+    </div>
+
+    <UFormField label="Sucursal" name="sucursalId">
+      <USelect
+        v-model="form.sucursalId"
+        :items="sucursalOptions"
+        class="w-40"
+        placeholder="Selecciona una sucursal"
+        :error="errors.sucursalId"
         required
       />
     </UFormField>
@@ -19,6 +40,7 @@
           placeholder="0.00"
           :error="errors.subtotal"
           required
+          disabled
         />
       </UFormField>
 
@@ -61,55 +83,16 @@
     </UFormField>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <UFormField label="Categoría" name="categoriaId">
-        <USelect
-          v-model="form.categoriaId"
-          :options="categoryOptions"
-          placeholder="Selecciona una categoría"
-          :error="errors.categoriaId"
-          required
-        />
-      </UFormField>
-
-      <UFormField label="Sucursal" name="sucursalId">
-        <USelect
-          v-model="form.sucursalId"
-          :options="sucursalOptions"
-          placeholder="Selecciona una sucursal"
-          :error="errors.sucursalId"
-          required
-        />
-      </UFormField>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <UFormField label="Fecha" name="fecha">
-        <UInput
-          v-model="form.fecha"
-          type="date"
-          :error="errors.fecha"
-          required
-        />
-      </UFormField>
-
       <UFormField label="Forma de Pago" name="formaPago">
         <USelect
           v-model="form.formaPago"
-          :options="formaPagoOptions"
+          :items="formaPagoOptions"
           placeholder="Selecciona forma de pago"
           :error="errors.formaPago"
           required
         />
       </UFormField>
     </div>
-
-    <UFormField label="URL del Comprobante" name="comprobante">
-      <UInput
-        v-model="form.comprobante"
-        placeholder="URL de la imagen del comprobante (opcional)"
-        :error="errors.comprobante"
-      />
-    </UFormField>
 
     <!-- Sección de detalles del gasto -->
     <div class="mt-6">
@@ -260,8 +243,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, watch, computed } from "vue";
 import { useExpenseStore } from "~/stores/expense";
+import { useBranchStore } from "~/stores/branch";
+
+// Initialize stores
+const expenseStore = useExpenseStore();
+const branchStore = useBranchStore();
 
 const props = defineProps({
   expense: {
@@ -271,7 +259,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["submit", "cancel"]);
-const expenseStore = useExpenseStore();
 const loading = ref(false);
 
 // Form state
@@ -308,7 +295,7 @@ const errors = reactive({
 });
 
 // Category options
-const categoryOptions = [
+const _categoryOptions = [
   { label: "Alimentación", value: 1 },
   { label: "Transporte", value: 2 },
   { label: "Alojamiento", value: 3 },
@@ -320,21 +307,18 @@ const categoryOptions = [
   { label: "Otros", value: 9 },
 ];
 
-// Sucursal options
-const sucursalOptions = [
-  { label: "Sucursal Principal", value: 1 },
-  { label: "Sucursal Norte", value: 2 },
-  { label: "Sucursal Sur", value: 3 },
-];
+// Sucursal options - computed from branch store
+const sucursalOptions = computed(() => {
+  return branchStore.branches.map((branch) => ({
+    label: branch.nombre,
+    value: parseInt(branch.id),
+  }));
+});
 
 // Forma de pago options
 const formaPagoOptions = [
   { label: "Efectivo", value: "Efectivo" },
-  { label: "Tarjeta de crédito", value: "Tarjeta de crédito" },
-  { label: "Tarjeta de débito", value: "Tarjeta de débito" },
-  { label: "Transferencia bancaria", value: "Transferencia bancaria" },
-  { label: "Cheque", value: "Cheque" },
-  { label: "Domiciliación bancaria", value: "Domiciliación bancaria" },
+  { label: "Transferencia", value: "Transferencia" },
 ];
 
 // Calculate total when subtotal, descuento or impuesto change
@@ -346,8 +330,25 @@ watch([() => form.subtotal, () => form.descuento, () => form.impuesto], () => {
   form.total = (subtotal - descuento + impuesto).toFixed(2);
 });
 
+// Observar cambios en las propiedades de los conceptos que afectan los cálculos
+watch(
+  expenseItems,
+  (items) => {
+    // Recalcular todos los subtotales y totales de los conceptos
+    items.forEach((item, index) => {
+      updateItemSubtotal(index);
+    });
+  },
+  { deep: true }
+);
+
 // Initialize form with expense data if editing
-onMounted(() => {
+onMounted(async () => {
+  // Fetch branches if they haven't been loaded yet
+  if (branchStore.branches.length === 0) {
+    await branchStore.fetchBranches();
+  }
+
   if (props.expense) {
     form.proveedor = props.expense.proveedor;
     form.subtotal = props.expense.subtotal;
@@ -368,6 +369,8 @@ onMounted(() => {
   } else {
     // Set default date to today for new expenses
     form.fecha = new Date().toISOString().split("T")[0];
+    // Set default category for new expenses
+    form.categoriaId = 9; // Categoría "Otros" por defecto
   }
 });
 
@@ -463,6 +466,8 @@ const isValidUrl = (url) => {
 const removeExpenseItem = (index) => {
   if (confirm("¿Está seguro de eliminar este concepto?")) {
     expenseItems.value.splice(index, 1);
+    // Actualizar totales al eliminar un concepto
+    updateFormTotals();
   }
 };
 
@@ -472,17 +477,19 @@ const addNewExpenseItem = () => {
     concepto: "",
     nombre: "", // Para compatibilidad con la base de datos
     cantidad: 1,
-    precioUnitario: "",
-    precio_unitario: "", // Para compatibilidad con la base de datos
-    subtotal: 0,
-    expense_id: props.expense?.id || 0, // Se actualizará cuando se cree el gasto
+    precioUnitario: 0,
+    precio_unitario: "0.00", // Para compatibilidad con la base de datos
+    subtotal: "0.00",
+    compraGastoId: props.expense?.id || 0, // Se actualizará cuando se cree el gasto
     descuento: 0,
     impuesto: 0,
-    total: 0,
+    total: "0.00",
     anomalia: false,
   };
 
   expenseItems.value.push(newItem);
+  // Calcular el subtotal y total iniciales
+  updateItemSubtotal(expenseItems.value.length - 1);
 };
 
 // Método para actualizar el subtotal y total de un concepto
@@ -494,14 +501,45 @@ const updateItemSubtotal = (index) => {
   const impuesto = parseFloat(item.impuesto) || 0;
 
   // Calcular subtotal (cantidad * precio unitario)
-  item.subtotal = cantidad * precioUnitario;
+  const calculatedSubtotal = cantidad * precioUnitario;
+
+  // Asignar el subtotal formateado para mostrar
+  item.subtotal = calculatedSubtotal.toFixed(2);
 
   // Calcular total (subtotal - descuento + impuesto)
-  item.total = item.subtotal - descuento + impuesto;
+  const calculatedTotal = calculatedSubtotal - descuento + impuesto;
+
+  // Asignar el total formateado para mostrar
+  item.total = calculatedTotal.toFixed(2);
 
   // Mantener campos sincronizados para compatibilidad
-  item.precio_unitario = item.precioUnitario;
+  item.precio_unitario = precioUnitario.toFixed(2);
   item.nombre = item.concepto;
+
+  // Recalcular totales generales del formulario
+  updateFormTotals();
+};
+
+// Método para actualizar los totales del formulario principal
+const updateFormTotals = () => {
+  let subtotal = 0;
+  let descuento = 0;
+  let impuesto = 0;
+
+  expenseItems.value.forEach((item) => {
+    subtotal += parseFloat(item.subtotal) || 0;
+    descuento += parseFloat(item.descuento) || 0;
+    impuesto += parseFloat(item.impuesto) || 0;
+  });
+
+  // Actualizar valores del formulario
+  form.subtotal = subtotal.toFixed(2);
+  form.descuento = descuento.toFixed(2);
+  form.impuesto = impuesto.toFixed(2);
+
+  // Calcular el total general
+  const total = subtotal - descuento + impuesto;
+  form.total = total.toFixed(2);
 };
 
 // Form submission handler
@@ -523,10 +561,15 @@ const handleSubmit = async () => {
       validado: form.validado,
       formaPago: form.formaPago,
       categoriaId: form.categoriaId,
-      items: expenseItems.value.map((item) => ({
-        ...item,
-        expense_id: props.expense?.id || 0, // Se actualizará en el servidor
-      })),
+      items: expenseItems.value.map((item) => {
+        delete item.concepto;
+        delete item.precioUnitario;
+
+        return {
+          ...item,
+          compraGastoId: props.expense?.id || 0, // Se actualizará en el servidor
+        };
+      }),
     };
 
     let result;
@@ -544,6 +587,8 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error("Error saving expense:", error);
+    // Mostrar mensaje de error al usuario
+    alert("Error al guardar el gasto. Por favor, inténtelo de nuevo.");
   } finally {
     loading.value = false;
   }
