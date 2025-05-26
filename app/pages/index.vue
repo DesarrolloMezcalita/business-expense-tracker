@@ -1,18 +1,19 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-6 py-12">
     <h1 class="font-bold text-3xl text-(--ui-primary)">
-      Business Expense Tracker
+      Gestor de Gastos Empresariales
     </h1>
 
     <p class="text-lg text-gray-600 max-w-md text-center">
-      A comprehensive solution for managing business expenses and user accounts
+      Una solución integral para gestionar gastos empresariales y cuentas de
+      usuario
     </p>
 
     <UCard class="w-full max-w-3xl">
       <template #header>
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">
-            Welcome, {{ authStore.user?.name || "Guest" }}
+            Bienvenido, {{ authStore.user?.name || "Invitado" }}
           </h2>
           <UBadge
             v-if="authStore.user?.role"
@@ -26,66 +27,14 @@
 
       <div class="py-4">
         <p v-if="authStore.isAuthenticated" class="mb-4">
-          You are logged in as <strong>{{ authStore.user?.email }}</strong
-          >. Use the navigation links above to manage your account and access
-          features.
+          Has iniciado sesión como <strong>{{ authStore.user?.email }}</strong
+          >. Utiliza los enlaces de navegación a la izquierda para gestionar tu
+          cuenta y acceder a las funciones.
         </p>
         <p v-else class="mb-4">
-          Please log in to access all features of the Business Expense Tracker.
+          Por favor, inicia sesión para acceder a todas las funciones del Gestor
+          de Gastos Empresariales.
         </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-          <UCard v-if="authStore.isAuthenticated">
-            <template #header>
-              <h3 class="text-lg font-medium">Quick Actions</h3>
-            </template>
-            <div class="space-y-2">
-              <UButton
-                label="Gestor de Gastos"
-                icon="i-heroicons-banknotes"
-                to="/expenses"
-                block
-              />
-              <UButton
-                label="User Management"
-                icon="i-heroicons-user-group"
-                to="/users"
-                block
-              />
-              <UButton
-                label="My Profile"
-                icon="i-heroicons-user-circle"
-                to="/profile"
-                block
-              />
-            </div>
-          </UCard>
-
-          <UCard>
-            <template #header>
-              <h3 class="text-lg font-medium">Resources</h3>
-            </template>
-            <div class="space-y-2">
-              <UButton
-                label="Documentation"
-                color="gray"
-                variant="outline"
-                icon="i-heroicons-document-text"
-                to="https://ui.nuxt.com"
-                target="_blank"
-                block
-              />
-              <UButton
-                label="Support"
-                color="gray"
-                variant="outline"
-                icon="i-heroicons-question-mark-circle"
-                to="#"
-                block
-              />
-            </div>
-          </UCard>
-        </div>
       </div>
     </UCard>
   </div>
@@ -103,11 +52,9 @@ const userRoleColor = computed(() => {
     case "Admin":
       return "blue";
     case "Editor":
-      return "yellow";
-    case "User":
-      return "gray";
+      return "neutral";
     default:
-      return "gray";
+      return "neutral";
   }
 });
 

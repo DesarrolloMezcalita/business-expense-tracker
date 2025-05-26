@@ -2,7 +2,7 @@
   <div class="h-full bg-white border-r border-gray-200">
     <div class="p-4 border-b border-gray-200">
       <h2 class="text-lg font-semibold text-gray-800">
-        Business Expense Tracker
+        Gestor de Gastos Empresariales
       </h2>
     </div>
 
@@ -27,7 +27,7 @@
         label="Gastos"
       />
 
-      <UButton
+      <!-- <UButton
         to="/recurring-expenses"
         block
         variant="ghost"
@@ -35,7 +35,7 @@
         :active="route.path === '/recurring-expenses'"
         icon="i-heroicons-clock"
         label="Gastos Recurrentes"
-      />
+      /> -->
 
       <UButton
         to="/supplies"

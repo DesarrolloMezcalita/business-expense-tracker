@@ -4,7 +4,7 @@
     <UContainer class="py-4 lg:hidden">
       <header class="flex justify-between items-center mb-4">
         <NuxtLink to="/" class="font-bold text-xl">
-          Business Expense Tracker
+          Gestor de Gastos Empresariales
         </NuxtLink>
 
         <div class="flex items-center gap-2">
