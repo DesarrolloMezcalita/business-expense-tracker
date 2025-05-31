@@ -32,7 +32,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Mi SPA con Nuxt",
+      title: "Gestor de Gastos Empresariales",
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "description", content: "Una app tipo SPA con Nuxt" },

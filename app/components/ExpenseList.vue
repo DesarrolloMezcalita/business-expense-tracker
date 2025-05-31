@@ -13,7 +13,7 @@
         <div class="flex-grow">
           <UInput
             v-model="filters.search"
-            placeholder="Buscar por proveedor, descripción..."
+            placeholder="Buscar por proveedor"
             icon="i-heroicons-magnifying-glass"
             class="w-full"
             @input="applyFilters"
@@ -47,32 +47,32 @@
         class="px-4 pb-4 border-t border-gray-200"
       >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <UFormGroup label="Categoría">
+          <!-- <UFormGroup label="Categoría">
             <USelect
               v-model="filters.category"
               :options="categoryOptions"
               placeholder="Todas las categorías"
               @input="applyFilters"
             />
-          </UFormGroup>
+          </UFormGroup> -->
 
-          <UFormGroup label="Forma de Pago">
+          <!-- <UFormGroup label="Forma de Pago">
             <USelect
               v-model="filters.formaPago"
               :options="formaPagoOptions"
               placeholder="Todas las formas de pago"
               @input="applyFilters"
             />
-          </UFormGroup>
+          </UFormGroup> -->
 
-          <UFormGroup label="Ordenar por">
+          <!-- <UFormGroup label="Ordenar por">
             <USelect
               v-model="sortBy"
               :options="sortOptions"
               placeholder="Seleccionar"
               @input="applySorting"
             />
-          </UFormGroup>
+          </UFormGroup> -->
 
           <UFormGroup label="Fecha desde">
             <UInput
@@ -90,7 +90,7 @@
             />
           </UFormGroup>
 
-          <UFormGroup label="Monto">
+          <!-- <UFormGroup label="Monto">
             <div class="flex space-x-2">
               <UInput
                 v-model="filters.minAmount"
@@ -105,7 +105,7 @@
                 @input="applyFilters"
               />
             </div>
-          </UFormGroup>
+          </UFormGroup> -->
         </div>
       </div>
     </div>

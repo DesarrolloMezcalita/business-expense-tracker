@@ -38,8 +38,7 @@ export const useExpenseStore = defineStore('expense', {
       if (state.filters.search) {
         const searchLower = state.filters.search.toLowerCase();
         filtered = filtered.filter(expense => 
-          expense.description.toLowerCase().includes(searchLower) ||
-          expense.category.toLowerCase().includes(searchLower)
+          expense.proveedor.toLowerCase().includes(searchLower)
         );
       }
       
