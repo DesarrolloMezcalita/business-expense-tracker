@@ -77,6 +77,42 @@ export const useSupplyStore = defineStore('supply', {
         this.loading = false;
       }
     },
+    
+    async fetchAllSupplies() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const supabase = useSupabase();
+        
+        // Construir consulta base
+        let query = supabase
+          .from('insumos')
+          .select('*', { count: 'exact' });
+        
+        // Aplicar paginación
+        const { data, error } = await query;
+        
+        if (error) throw error;
+        
+        this.supplies = data;
+        
+        // Obtener lista de proveedores únicos para los filtros
+        const { data: suppliersData } = await supabase
+          .from('insumos')
+          .select('supplier')
+          .order('supplier');
+          
+        if (suppliersData) {
+          this.suppliers = [...new Set(suppliersData.map(item => item.supplier))];
+        }
+      } catch (error) {
+        this.error = error.message;
+        console.error('Error fetching supplies:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
     async fetchSupply(id) {
       this.loading = true;

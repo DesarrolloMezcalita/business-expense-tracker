@@ -74,21 +74,21 @@
             />
           </UFormGroup> -->
 
-          <UFormGroup label="Fecha desde">
+          <UFormField label="Fecha desde">
             <UInput
               v-model="filters.dateFrom"
               type="date"
               @input="applyFilters"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Fecha hasta">
+          <UFormField label="Fecha hasta">
             <UInput
               v-model="filters.dateTo"
               type="date"
               @input="applyFilters"
             />
-          </UFormGroup>
+          </UFormField>
 
           <!-- <UFormGroup label="Monto">
             <div class="flex space-x-2">
@@ -512,7 +512,9 @@ const sortField = ref("fecha");
 const sortDirection = ref(false); // false = desc, true = asc
 
 // Opciones para filtros
-const categoryOptions = [
+// Estas opciones están definidas pero no se usan actualmente
+// Se mantienen para uso futuro cuando se descomenten los filtros correspondientes
+const _categoryOptions = [
   { label: "Alimentación", value: 1 },
   { label: "Transporte", value: 2 },
   { label: "Alojamiento", value: 3 },
@@ -523,7 +525,7 @@ const categoryOptions = [
   { label: "Marketing", value: 8 },
 ];
 
-const formaPagoOptions = [
+const _formaPagoOptions = [
   { label: "Todas", value: "" },
   { label: "Efectivo", value: "Efectivo" },
   { label: "Tarjeta de crédito", value: "Tarjeta de crédito" },
@@ -533,7 +535,7 @@ const formaPagoOptions = [
   { label: "Domiciliación bancaria", value: "Domiciliación bancaria" },
 ];
 
-const sortOptions = [
+const _sortOptions = [
   { label: "Fecha (más reciente)", value: "fecha-desc" },
   { label: "Fecha (más antigua)", value: "fecha-asc" },
   { label: "Total (mayor)", value: "total-desc" },
@@ -584,8 +586,8 @@ watch(itemsPerPage, (newLimit) => {
 });
 
 // Métodos
-const applyFilters = () => {
-  expenseStore.setFilters(filters.value);
+const applyFilters = async () => {
+  await expenseStore.setFilters(filters.value);
 };
 
 const toggleSort = (field) => {
@@ -599,7 +601,8 @@ const toggleSort = (field) => {
   expenseStore.setSorting(sortField.value, !sortDirection.value);
 };
 
-const sortBy = computed({
+// Esta propiedad computada se usará cuando se descomente el selector de ordenación
+const _sortBy = computed({
   get() {
     return `${sortField.value}-${sortDirection.value ? "asc" : "desc"}`;
   },
@@ -614,11 +617,12 @@ const sortBy = computed({
   },
 });
 
-const applySorting = () => {
-  // La lógica está en el setter de sortBy
+// Este método se usará cuando se descomente el selector de ordenación
+const _applySorting = () => {
+  // La lógica está en el setter de _sortBy
 };
 
-const clearFilters = () => {
+const clearFilters = async () => {
   filters.value = {
     search: "",
     category: "",
@@ -631,7 +635,7 @@ const clearFilters = () => {
   };
   sortField.value = "fecha";
   sortDirection.value = false;
-  expenseStore.clearFilters();
+  await expenseStore.clearFilters();
 };
 
 const confirmDelete = (expense) => {

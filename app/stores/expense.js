@@ -25,7 +25,7 @@ export const useExpenseStore = defineStore('expense', {
       maxAmount: ''
     },
     sorting: {
-      field: 'date',
+      field: 'fecha',
       descending: true
     }
   }),
@@ -56,15 +56,15 @@ export const useExpenseStore = defineStore('expense', {
       
       if (state.filters.dateFrom) {
         const fromDate = new Date(state.filters.dateFrom);
-        filtered = filtered.filter(expense => 
-          new Date(expense.date) >= fromDate
+        filtered = filtered.filter(expense =>
+          new Date(expense.fecha) >= fromDate
         );
       }
       
       if (state.filters.dateTo) {
         const toDate = new Date(state.filters.dateTo);
-        filtered = filtered.filter(expense => 
-          new Date(expense.date) <= toDate
+        filtered = filtered.filter(expense =>
+          new Date(expense.fecha) <= toDate
         );
       }
       
@@ -90,7 +90,7 @@ export const useExpenseStore = defineStore('expense', {
         if (field === 'amount') {
           valueA = parseFloat(valueA);
           valueB = parseFloat(valueB);
-        } else if (field === 'date') {
+        } else if (field === 'fecha') {
           valueA = new Date(valueA).getTime();
           valueB = new Date(valueB).getTime();
         } else if (typeof valueA === 'string') {
@@ -139,8 +139,31 @@ export const useExpenseStore = defineStore('expense', {
           .select(`
             *,
             items:compra_gasto_detalles(*)
-          `)
-          .order('fecha', { ascending: false });
+          `);
+
+        console.log("fetch this.filters", this.filters);
+        
+        
+        // Aplicar filtros de fecha a la consulta
+        if (this.filters.dateFrom) {
+          const fromDate = new Date(this.filters.dateFrom);
+          // Formatear la fecha como YYYY-MM-DD para la consulta SQL
+          const formattedFromDate = fromDate.toISOString().split('T')[0];
+          query = query.gte('fecha', formattedFromDate);
+          console.log("this.filters.dateFrom", this.filters.dateFrom);
+        }
+
+        
+        
+        if (this.filters.dateTo) {
+          const toDate = new Date(this.filters.dateTo);
+          // Formatear la fecha como YYYY-MM-DD para la consulta SQL
+          const formattedToDate = toDate.toISOString().split('T')[0];
+          query = query.lte('fecha', formattedToDate);
+        }
+        
+        // Aplicar ordenación
+        query = query.order('fecha', { ascending: false });
         
         const { data, error } = await query;
         
@@ -484,9 +507,12 @@ export const useExpenseStore = defineStore('expense', {
     },
     
     // Filter actions
-    setFilters(filters) {
+    async setFilters(filters) {
       this.filters = { ...this.filters, ...filters };
       this.pagination.page = 1; // Reset to first page when applying filters
+      
+      // Volver a cargar los datos con los nuevos filtros
+      await this.fetchExpenses();
     },
     
     setSorting(field, descending = false) {
@@ -495,7 +521,7 @@ export const useExpenseStore = defineStore('expense', {
       this.pagination.page = 1; // Reset to first page when changing sorting
     },
     
-    clearFilters() {
+    async clearFilters() {
       this.filters = {
         search: '',
         category: '',
@@ -506,10 +532,13 @@ export const useExpenseStore = defineStore('expense', {
         maxAmount: ''
       };
       this.sorting = {
-        field: 'date',
+        field: 'fecha',
         descending: true
       };
       this.pagination.page = 1;
+      
+      // Volver a cargar los datos sin filtros
+      await this.fetchExpenses();
     }
   }
 });

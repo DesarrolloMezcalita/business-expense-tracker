@@ -154,7 +154,7 @@ const form = ref({
 
 onMounted(async () => {
   // Cargar la lista de insumos
-  await supplyStore.fetchSupplies();
+  await supplyStore.fetchAllSupplies();
 
   if (props.skuId) {
     await skuStore.fetchSku(props.skuId);
