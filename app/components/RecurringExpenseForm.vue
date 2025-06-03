@@ -27,20 +27,19 @@
         </UFormField>
 
         <!-- Frecuencia -->
-        <UFormField label="Frecuencia" name="frecuencia" required>
+        <!-- <UFormField label="Frecuencia" name="frecuencia" required>
           <USelect
             v-model="form.frecuencia"
-            :options="frecuenciaOptions"
+            :items="frecuenciaOptions"
             placeholder="Seleccionar frecuencia"
           />
-        </UFormField>
+        </UFormField> -->
 
         <!-- Día de cobro -->
         <UFormField
           label="Día de cobro"
           name="dia_cobro"
           :required="isDiaCobro"
-          :description="diaCobro.description"
         >
           <UInput
             v-model="form.dia_cobro"
@@ -48,31 +47,31 @@
             :min="diaCobro.min"
             :max="diaCobro.max"
             :placeholder="diaCobro.placeholder"
-            :disabled="!isDiaCobro"
           />
         </UFormField>
 
         <!-- Forma de pago -->
-        <UFormField label="Forma de pago" name="formaPago" required>
+        <UFormField label="Forma de pago" name="formapago" required>
           <USelect
-            v-model="form.formaPago"
+            v-model="form.formapago"
             :items="formaPagoOptions"
             placeholder="Seleccionar forma de pago"
           />
         </UFormField>
 
         <!-- Sucursal -->
-        <UFormField label="Sucursal" name="sucursalId" required>
+        <UFormField label="Sucursal" name="sucursalid" required>
           <USelect
-            v-model="form.sucursalId"
+            v-model="form.sucursalid"
             :items="branchOptions"
+            :loading="branchesLoading"
             placeholder="Seleccionar sucursal"
           />
         </UFormField>
 
         <!-- Estado -->
         <UFormField label="Estado" name="activo" class="md:col-span-2">
-          <UToggle
+          <USwitch
             v-model="form.activo"
             :on-icon="{ icon: 'i-heroicons-check', class: 'text-white' }"
             :off-icon="{ icon: 'i-heroicons-x-mark', class: 'text-white' }"
@@ -83,7 +82,7 @@
             <template #off>
               <span class="text-xs">Inactivo</span>
             </template>
-          </UToggle>
+          </USwitch>
         </UFormField>
       </div>
 
@@ -107,6 +106,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { FRECUENCIAS } from "~/types/recurring-expense";
+import { useBranchStore } from "~/stores/branch";
 
 const props = defineProps({
   expense: {
@@ -121,37 +121,42 @@ const props = defineProps({
 
 const emit = defineEmits(["submit", "cancel"]);
 
-// Opciones para los selects
+// Inicializar stores
+const branchStore = useBranchStore();
 
-const frecuenciaOptions = FRECUENCIAS.map((f) => ({
-  label: f.label,
-  value: f.value,
-}));
+// Opciones para los selects
+const frecuenciaOptions = computed(() => {
+  return FRECUENCIAS.map((f) => ({
+    label: f.label,
+    value: f.value,
+  }));
+});
 
 const formaPagoOptions = [
   { label: "Efectivo", value: "Efectivo" },
-  { label: "Tarjeta de crédito", value: "Tarjeta de crédito" },
-  { label: "Tarjeta de débito", value: "Tarjeta de débito" },
-  { label: "Transferencia bancaria", value: "Transferencia bancaria" },
-  { label: "Cheque", value: "Cheque" },
-  { label: "Domiciliación bancaria", value: "Domiciliación bancaria" },
+  { label: "Transferencia bancaria", value: "Transferencia" },
 ];
 
-const branchOptions = [
-  { label: "Sucursal Principal", value: 1 },
-  { label: "Sucursal Norte", value: 2 },
-  { label: "Sucursal Sur", value: 3 },
-];
+// Estado de carga para sucursales
+const branchesLoading = ref(false);
+
+// Opciones de sucursales como computed property
+const branchOptions = computed(() => {
+  return branchStore.branches.map((branch) => ({
+    label: branch.nombre,
+    value: branch.id,
+  }));
+});
 
 // Estado del formulario
 const form = ref({
   nombre: "",
   monto: "",
-  frecuencia: "",
+  // frecuencia: "",
   dia_cobro: "",
   proveedor: "",
-  formaPago: "",
-  sucursalId: "",
+  formapago: "",
+  sucursalid: "",
   activo: true,
 });
 
@@ -210,11 +215,11 @@ watch(
       form.value = {
         nombre: newExpense.nombre || "",
         monto: newExpense.monto || "",
-        frecuencia: newExpense.frecuencia || "",
+        // frecuencia: newExpense.frecuencia || "",
         dia_cobro: newExpense.dia_cobro || "",
         proveedor: newExpense.proveedor || "",
-        formaPago: newExpense.formaPago || "",
-        sucursalId: newExpense.sucursalId || "",
+        formapago: newExpense.formapago || "",
+        sucursalid: newExpense.sucursalid || "",
         activo: newExpense.activo !== undefined ? newExpense.activo : true,
       };
     } else {
@@ -222,11 +227,11 @@ watch(
       form.value = {
         nombre: "",
         monto: "",
-        frecuencia: "",
+        // frecuencia: "",
         dia_cobro: "",
         proveedor: "",
-        formaPago: "",
-        sucursalId: "",
+        formapago: "",
+        sucursalid: "",
         activo: true,
       };
     }
@@ -241,9 +246,9 @@ const onSubmit = () => {
     !form.value.nombre ||
     !form.value.proveedor ||
     !form.value.monto ||
-    !form.value.frecuencia ||
-    !form.value.formaPago ||
-    !form.value.sucursalId
+    // !form.value.frecuencia ||
+    !form.value.formapago ||
+    !form.value.sucursalid
   ) {
     return;
   }
@@ -257,10 +262,9 @@ const onSubmit = () => {
   const formData = {
     ...form.value,
     monto: parseFloat(form.value.monto),
-    categoriaId: 1, // Default category ID
-    sucursalId: parseInt(form.value.sucursalId),
+    categoriaid: 1, // Default category ID
+    sucursalid: parseInt(form.value.sucursalid),
     dia_cobro: form.value.dia_cobro ? parseInt(form.value.dia_cobro) : null,
-    fecha_inicio: new Date().toISOString().split("T")[0], // Current date as default
   };
 
   // Emitir evento con los datos del formulario
@@ -268,7 +272,17 @@ const onSubmit = () => {
 };
 
 // Inicialización
-onMounted(() => {
-  // No need to set fecha_inicio anymore as it's handled in onSubmit
+onMounted(async () => {
+  // Cargar sucursales si no están cargadas
+  if (!branchStore.branches.length) {
+    branchesLoading.value = true;
+    try {
+      await branchStore.fetchBranches();
+    } catch (error) {
+      console.error("Error al cargar sucursales:", error);
+    } finally {
+      branchesLoading.value = false;
+    }
+  }
 });
 </script>

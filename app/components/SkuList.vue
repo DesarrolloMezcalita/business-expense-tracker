@@ -157,6 +157,12 @@
             </th>
             <th
               scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Insumo
+            </th>
+            <th
+              scope="col"
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Acciones
@@ -198,6 +204,9 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ sku.cantidad }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ sku.insumo?.nombre }}
             </td>
             <td
               class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -422,8 +431,10 @@
               </div>
 
               <div>
-                <h3 class="text-sm font-medium text-gray-500">ID Insumo</h3>
-                <p class="mt-1 text-base">{{ skuStore.sku.insumoId }}</p>
+                <h3 class="text-sm font-medium text-gray-500">Insumo</h3>
+                <p class="mt-1 text-base">
+                  {{ skuStore.sku.insumo?.nombre || "No asignado" }}
+                </p>
               </div>
             </div>
           </div>
@@ -648,17 +659,5 @@ const closeForm = () => {
   editingSkuId.value = null;
 };
 
-// Utilidades
-const formatDate = (dateString) => {
-  if (!dateString) return "N/A";
-
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-ES", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-};
+// No se necesitan utilidades adicionales
 </script>

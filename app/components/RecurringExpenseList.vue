@@ -47,83 +47,24 @@
         class="px-4 pb-4 border-t border-gray-200"
       >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <UFormGroup label="Categoría">
+          <UFormField label="Sucursal">
             <USelect
-              v-model="filters.category"
-              :options="categoryOptions"
-              placeholder="Todas las categorías"
+              v-model="filters.sucursalId"
+              :items="branchOptions"
+              placeholder="Todas las sucursales"
+              :loading="branchesLoading"
               @input="applyFilters"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Frecuencia">
-            <USelect
-              v-model="filters.frequency"
-              :options="frequencyOptions"
-              placeholder="Todas las frecuencias"
-              @input="applyFilters"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Estado">
-            <USelect
-              v-model="filters.active"
-              :options="statusOptions"
-              placeholder="Todos los estados"
-              @input="applyFilters"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Forma de Pago">
+          <UFormField label="Forma de Pago">
             <USelect
               v-model="filters.formaPago"
-              :options="formaPagoOptions"
+              :items="formaPagoOptions"
               placeholder="Todas las formas de pago"
               @input="applyFilters"
             />
-          </UFormGroup>
-
-          <UFormGroup label="Ordenar por">
-            <USelect
-              v-model="sortBy"
-              :options="sortOptions"
-              placeholder="Seleccionar"
-              @input="applySorting"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Monto">
-            <div class="flex space-x-2">
-              <UInput
-                v-model="filters.minAmount"
-                type="number"
-                placeholder="Min"
-                @input="applyFilters"
-              />
-              <UInput
-                v-model="filters.maxAmount"
-                type="number"
-                placeholder="Max"
-                @input="applyFilters"
-              />
-            </div>
-          </UFormGroup>
-
-          <UFormGroup label="Fecha inicio desde">
-            <UInput
-              v-model="filters.dateFrom"
-              type="date"
-              @input="applyFilters"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Fecha inicio hasta">
-            <UInput
-              v-model="filters.dateTo"
-              type="date"
-              @input="applyFilters"
-            />
-          </UFormGroup>
+          </UFormField>
         </div>
       </div>
     </div>
@@ -197,43 +138,27 @@
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    @click="toggleSort('sucursalId')"
+                  >
+                    Sucursal
+                    <UIcon
+                      v-if="sortField === 'sucursalId'"
+                      :name="
+                        sortDirection
+                          ? 'i-heroicons-arrow-up'
+                          : 'i-heroicons-arrow-down'
+                      "
+                      class="inline-block ml-1"
+                    />
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('monto')"
                   >
                     Monto
                     <UIcon
                       v-if="sortField === 'monto'"
-                      :name="
-                        sortDirection
-                          ? 'i-heroicons-arrow-up'
-                          : 'i-heroicons-arrow-down'
-                      "
-                      class="inline-block ml-1"
-                    />
-                  </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    @click="toggleSort('frecuencia')"
-                  >
-                    Frecuencia
-                    <UIcon
-                      v-if="sortField === 'frecuencia'"
-                      :name="
-                        sortDirection
-                          ? 'i-heroicons-arrow-up'
-                          : 'i-heroicons-arrow-down'
-                      "
-                      class="inline-block ml-1"
-                    />
-                  </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    @click="toggleSort('fecha_inicio')"
-                  >
-                    Fecha Inicio
-                    <UIcon
-                      v-if="sortField === 'fecha_inicio'"
                       :name="
                         sortDirection
                           ? 'i-heroicons-arrow-up'
@@ -269,17 +194,14 @@
                     {{ expense.proveedor }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ expense.sucursal?.nombre || "No asignada" }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ formatCurrency(expense.monto) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ formatFrecuencia(expense.frecuencia) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ formatDate(expense.fecha_inicio) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <UBadge
-                      :color="expense.activo ? 'green' : 'gray'"
+                      :color="expense.activo ? 'success' : 'danger'"
                       variant="subtle"
                       size="sm"
                     >
@@ -305,18 +227,6 @@
                         size="xs"
                         @click="$emit('edit', expense)"
                         title="Editar"
-                      />
-                      <UButton
-                        color="gray"
-                        variant="ghost"
-                        :icon="
-                          expense.activo
-                            ? 'i-heroicons-pause'
-                            : 'i-heroicons-play'
-                        "
-                        size="xs"
-                        @click="toggleActive(expense)"
-                        :title="expense.activo ? 'Desactivar' : 'Activar'"
                       />
                       <UButton
                         color="gray"
@@ -364,6 +274,10 @@
                 <div>
                   <p class="text-xs text-gray-500">Monto</p>
                   <p>{{ formatCurrency(expense.monto) }}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-500">Sucursal</p>
+                  <p>{{ expense.sucursal?.nombre || "No asignada" }}</p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500">Frecuencia</p>
@@ -592,10 +506,12 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useRecurringExpenseStore } from "~/stores/recurring-expense";
+import { useBranchStore } from "~/stores/branch";
 import { FRECUENCIAS } from "~/types/recurring-expense";
 
 const emit = defineEmits(["new", "view", "edit", "delete", "toggle-active"]);
 const recurringExpenseStore = useRecurringExpenseStore();
+const branchStore = useBranchStore();
 
 // Estado local
 const showDeleteModal = ref(false);
@@ -609,6 +525,7 @@ const itemsPerPage = ref(10);
 const showAdvancedFilters = ref(false);
 const sortField = ref("fecha_inicio");
 const sortDirection = ref(false); // false = desc, true = asc
+const branchesLoading = ref(false);
 
 // Opciones para filtros
 const categoryOptions = [
@@ -634,14 +551,21 @@ const statusOptions = [
 ];
 
 const formaPagoOptions = [
-  { label: "Todas", value: "" },
+  { label: "Todas", value: "All" },
   { label: "Efectivo", value: "Efectivo" },
-  { label: "Tarjeta de crédito", value: "Tarjeta de crédito" },
-  { label: "Tarjeta de débito", value: "Tarjeta de débito" },
   { label: "Transferencia bancaria", value: "Transferencia bancaria" },
-  { label: "Cheque", value: "Cheque" },
-  { label: "Domiciliación bancaria", value: "Domiciliación bancaria" },
 ];
+
+// Opciones de sucursales
+const branchOptions = computed(() => {
+  return [
+    { label: "Todas", value: "All" },
+    ...branchStore.branches.map((branch) => ({
+      label: branch.nombre,
+      value: branch.id,
+    })),
+  ];
+});
 
 const sortOptions = [
   { label: "Fecha inicio (más reciente)", value: "fecha_inicio-desc" },
@@ -664,6 +588,7 @@ const filters = ref({
   minAmount: "",
   maxAmount: "",
   formaPago: "",
+  sucursalid: "",
   active: null,
 });
 
@@ -745,6 +670,7 @@ const clearFilters = () => {
     minAmount: "",
     maxAmount: "",
     formaPago: "",
+    sucursalid: "",
     active: null,
   };
   sortField.value = "fecha_inicio";
@@ -826,8 +752,21 @@ const formatFrecuencia = (frecuencia) => {
 
 // Cargar datos al montar el componente
 onMounted(async () => {
+  // Cargar gastos recurrentes
   if (!recurringExpenseStore.recurringExpenses.length) {
     await recurringExpenseStore.fetchRecurringExpenses();
+  }
+
+  // Cargar sucursales
+  branchesLoading.value = true;
+  try {
+    if (!branchStore.branches.length) {
+      await branchStore.fetchBranches();
+    }
+  } catch (error) {
+    console.error("Error al cargar sucursales:", error);
+  } finally {
+    branchesLoading.value = false;
   }
 });
 </script>

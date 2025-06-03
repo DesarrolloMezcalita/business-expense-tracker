@@ -74,6 +74,16 @@
             />
           </UFormGroup> -->
 
+          <UFormField label="Sucursal">
+            <USelect
+              v-model="filters.sucursalId"
+              :items="branchOptions"
+              placeholder="Todas las sucursales"
+              @update:model-value="applyFilters"
+            />
+            <!-- @input="applyFilters" -->
+          </UFormField>
+
           <UFormField label="Fecha desde">
             <UInput
               v-model="filters.dateFrom"
@@ -176,6 +186,22 @@
                   <th
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    @click="toggleSort('sucursal')"
+                  >
+                    Sucursal
+                    <UIcon
+                      v-if="sortField === 'sucursal'"
+                      :name="
+                        sortDirection
+                          ? 'i-heroicons-arrow-up'
+                          : 'i-heroicons-arrow-down'
+                      "
+                      class="inline-block ml-1"
+                    />
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('subtotal')"
                   >
                     Subtotal
@@ -258,6 +284,9 @@
                     {{ expense.proveedor }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ expense.sucursal?.nombre || "No asignada" }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ formatCurrency(expense.subtotal) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -319,7 +348,8 @@
                     {{ expense.proveedor }}
                   </h3>
                   <p class="text-xs text-gray-500">
-                    {{ formatDate(expense.fecha) }}
+                    {{ formatDate(expense.fecha) }} |
+                    {{ expense.sucursal?.nombre || "No asignada" }}
                   </p>
                 </div>
                 <div class="text-right">
@@ -497,9 +527,11 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useExpenseStore } from "~/stores/expense";
+import { useBranchStore } from "~/stores/branch";
 
 const emit = defineEmits(["new", "view", "edit", "delete"]);
 const expenseStore = useExpenseStore();
+const branchStore = useBranchStore();
 
 // Estado local
 const showDeleteModal = ref(false);
@@ -576,6 +608,29 @@ const hasActiveFilters = computed(() => {
   );
 });
 
+// Opciones para el selector de sucursales
+const branchOptions = computed(() => {
+  const options = [{ label: "Todas las sucursales", value: "All" }];
+
+  // Obtener todas las sucursales disponibles del store
+  if (branchStore.branches && branchStore.branches.length > 0) {
+    // Ordenar alfabéticamente para facilitar la selección
+    const sortedBranches = [...branchStore.branches].sort((a, b) =>
+      a.nombre.localeCompare(b.nombre)
+    );
+
+    // Añadir todas las sucursales al selector
+    sortedBranches.forEach((branch) => {
+      options.push({
+        label: branch.nombre,
+        value: branch.id.toString(),
+      });
+    });
+  }
+
+  return options;
+});
+
 // Watchers
 watch(currentPage, (newPage) => {
   expenseStore.setPage(newPage);
@@ -632,6 +687,7 @@ const clearFilters = async () => {
     minAmount: "",
     maxAmount: "",
     formaPago: "",
+    sucursalId: "",
   };
   sortField.value = "fecha";
   sortDirection.value = false;
@@ -677,6 +733,12 @@ const formatDate = (dateString) => {
 
 // Cargar datos al montar el componente
 onMounted(async () => {
+  // Cargar sucursales para el filtro
+  if (!branchStore.branches.length) {
+    await branchStore.fetchBranches();
+  }
+
+  // Cargar gastos
   if (!expenseStore.expenses.length) {
     await expenseStore.fetchExpenses();
   }

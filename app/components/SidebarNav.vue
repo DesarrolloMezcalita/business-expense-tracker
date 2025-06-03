@@ -27,7 +27,7 @@
         label="Gastos"
       />
 
-      <!-- <UButton
+      <UButton
         to="/recurring-expenses"
         block
         variant="ghost"
@@ -35,7 +35,7 @@
         :active="route.path === '/recurring-expenses'"
         icon="i-heroicons-clock"
         label="Gastos Recurrentes"
-      /> -->
+      />
 
       <UButton
         to="/supplies"

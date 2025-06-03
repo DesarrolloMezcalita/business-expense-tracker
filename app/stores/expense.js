@@ -22,7 +22,8 @@ export const useExpenseStore = defineStore('expense', {
       dateFrom: '',
       dateTo: '',
       minAmount: '',
-      maxAmount: ''
+      maxAmount: '',
+      sucursalId: ''
     },
     sorting: {
       field: 'fecha',
@@ -43,13 +44,19 @@ export const useExpenseStore = defineStore('expense', {
       }
       
       if (state.filters.category) {
-        filtered = filtered.filter(expense => 
+        filtered = filtered.filter(expense =>
           expense.category === state.filters.category
         );
       }
       
+      if (state.filters.sucursalId) {
+        filtered = filtered.filter(expense =>
+          expense.sucursalId === parseInt(state.filters.sucursalId)
+        );
+      }
+      
       if (state.filters.status) {
-        filtered = filtered.filter(expense => 
+        filtered = filtered.filter(expense =>
           expense.status === state.filters.status
         );
       }
@@ -83,19 +90,29 @@ export const useExpenseStore = defineStore('expense', {
       // Apply sorting
       const { field, descending } = state.sorting;
       filtered.sort((a, b) => {
-        let valueA = a[field];
-        let valueB = b[field];
+        let valueA, valueB;
         
-        // Handle special cases for different field types
-        if (field === 'amount') {
-          valueA = parseFloat(valueA);
-          valueB = parseFloat(valueB);
-        } else if (field === 'fecha') {
-          valueA = new Date(valueA).getTime();
-          valueB = new Date(valueB).getTime();
-        } else if (typeof valueA === 'string') {
+        // Handle special case for sucursal field
+        if (field === 'sucursal') {
+          valueA = a.sucursal?.nombre || '';
+          valueB = b.sucursal?.nombre || '';
           valueA = valueA.toLowerCase();
           valueB = valueB.toLowerCase();
+        } else {
+          valueA = a[field];
+          valueB = b[field];
+          
+          // Handle special cases for different field types
+          if (field === 'amount') {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+          } else if (field === 'fecha') {
+            valueA = new Date(valueA).getTime();
+            valueB = new Date(valueB).getTime();
+          } else if (typeof valueA === 'string') {
+            valueA = valueA.toLowerCase();
+            valueB = valueB.toLowerCase();
+          }
         }
         
         // Apply sort direction
@@ -138,7 +155,8 @@ export const useExpenseStore = defineStore('expense', {
           .from('compras_gastos')
           .select(`
             *,
-            items:compra_gasto_detalles(*)
+            items:compra_gasto_detalles(*),
+            sucursal:sucursales(id, nombre)
           `);
 
         console.log("fetch this.filters", this.filters);
@@ -206,7 +224,8 @@ export const useExpenseStore = defineStore('expense', {
           .from('compras_gastos')
           .select(`
             *,
-            items:compra_gasto_detalles(*)
+            items:compra_gasto_detalles(*),
+            sucursal:sucursales(id, nombre)
           `)
           .eq('id', id)
           .single();
@@ -529,7 +548,8 @@ export const useExpenseStore = defineStore('expense', {
         dateFrom: '',
         dateTo: '',
         minAmount: '',
-        maxAmount: ''
+        maxAmount: '',
+        sucursalId: ''
       };
       this.sorting = {
         field: 'fecha',

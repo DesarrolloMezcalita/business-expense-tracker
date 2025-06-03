@@ -121,7 +121,10 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
         
         let query = supabase
           .from('gastos_recurrentes')
-          .select('*')
+          .select(`
+            *,
+            sucursal:sucursales(id, nombre)
+          `)
           .order('created_at', { ascending: false });
         
         const { data, error } = await query;
@@ -211,11 +214,7 @@ export const useRecurringExpenseStore = defineStore('recurring-expense', {
         // Add user_id to the recurring expense
         const newRecurringExpense = {
           ...recurringExpense,
-          categoriaId: 1, // Default category ID
-          descripcion: '', // Empty description
-          fecha_inicio: new Date().toISOString().split("T")[0], // Current date
-          fecha_fin: null, // No end date
-          user_id: authStore.user?.id
+          categoriaid: 1, // Default category ID
         };
         
         const { data, error } = await supabase

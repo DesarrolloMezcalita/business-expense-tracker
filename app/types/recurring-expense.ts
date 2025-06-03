@@ -1,29 +1,24 @@
-export interface RecurringExpense {
+export interface GastoRecurrente {
   id: number;
   nombre: string;
-  descripcion?: string; // Optional, not used in form
   monto: number;
-  frecuencia: string; // 'mensual', 'semanal', 'trimestral', 'anual', etc.
-  dia_cobro?: number; // día del mes para cobros mensuales/anuales, día de la semana para semanales
-  fecha_inicio?: string; // Date format as string, auto-generated
-  fecha_fin?: string; // Date format as string, optional
+  dia_cobro: number;
   proveedor: string;
-  categoriaId?: number; // Optional, default value used
-  formaPago: string;
+  categoriaid: number;
+  formapago: string;
   activo: boolean;
-  created_at: string; // ISO timestamp string
-  updated_at: string; // ISO timestamp string
-  sucursalId: number;
-}
-
-export interface RecurringExpenseInstance {
-  id: number;
-  gasto_recurrente_id: number;
-  fecha: string; // Date format as string
-  monto: number;
-  pagado: boolean;
-  compra_gasto_id?: number; // ID of the related expense if paid
-  created_at: string; // ISO timestamp string
+  created_at: string; // o Date si usas objetos Date en lugar de strings ISO
+  updated_at: string; // idem arriba
+  sucursalid: number;
+  frecuencia?: string; // Tipo de frecuencia (mensual, semanal, etc.)
+  descripcion?: string; // Descripción opcional
+  fecha_inicio?: string; // Fecha de inicio del gasto recurrente
+  fecha_fin?: string | null; // Fecha de fin del gasto recurrente (opcional)
+  user_id?: string; // ID del usuario que creó el gasto
+  sucursal?: {
+    id: number;
+    nombre: string;
+  };
 }
 
 export type FrecuenciaOption = {
