@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { useSupabase } from '~/utils/supabase';
+import { useAuthStore } from '~/stores/auth';
 
 /**
  * User store for managing users
@@ -31,6 +32,15 @@ export const useWAUserStore = defineStore('wauser', {
   },
 
   actions: {
+    // Helper method to check if current user has admin permissions
+    checkAdminPermission() {
+      const authStore = useAuthStore();
+      if (!authStore.isAdmin) {
+        throw new Error('Permission denied: Admin privileges required for WhatsApp user management');
+      }
+      return true;
+    },
+    
     async fetchUsers() {
       this.isLoading = true;
       this.error = null;
@@ -108,6 +118,9 @@ export const useWAUserStore = defineStore('wauser', {
     
     async addUser(userData) {
       try {
+        // Check if user has admin permissions
+        this.checkAdminPermission();
+        
         const now = new Date().toISOString();
         // Format the data for Supabase (snake_case)
         const newUser = {
@@ -158,6 +171,9 @@ export const useWAUserStore = defineStore('wauser', {
     
     async updateUser(userData) {
       try {
+        // Check if user has admin permissions
+        this.checkAdminPermission();
+        
         // Format the data for Supabase (snake_case)
         const updatedUser = {
           name: userData.name,
@@ -211,6 +227,9 @@ export const useWAUserStore = defineStore('wauser', {
     
     async deleteUser(userId) {
       try {
+        // Check if user has admin permissions
+        this.checkAdminPermission();
+        
         // Delete the user from Supabase
         const supabase = useSupabase();
         const { error } = await supabase
@@ -250,6 +269,9 @@ export const useWAUserStore = defineStore('wauser', {
     // Additional utility methods
     async setUserActive(userId, isActive) {
       try {
+        // Check if user has admin permissions
+        this.checkAdminPermission();
+        
         // Update the user active status in Supabase
         const supabase = useSupabase();
         const { error } = await supabase
@@ -284,6 +306,9 @@ export const useWAUserStore = defineStore('wauser', {
     
     async setUserDeleted(userId, isDeleted) {
       try {
+        // Check if user has admin permissions
+        this.checkAdminPermission();
+        
         // Update the user deleted status in Supabase
         const supabase = useSupabase();
         const { error } = await supabase
@@ -317,6 +342,9 @@ export const useWAUserStore = defineStore('wauser', {
     },
     
     async bulkDeleteUsers(userIds) {
+      // Check if user has admin permissions
+      this.checkAdminPermission();
+      
       for (const id of userIds) {
         try {
           await this.deleteUser(id);

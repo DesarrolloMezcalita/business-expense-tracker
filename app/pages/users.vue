@@ -1205,12 +1205,13 @@ onMounted(async () => {
 
 // Define page metadata
 definePageMeta({
-  middleware: ["auth"],
-  // Only allow admin and editor roles to access this page
+  middleware: ["admin"],
+  // The admin middleware already handles the role check,
+  // but we keep this as an additional security layer
   validate: async () => {
     const authStore = useAuthStore();
     await authStore.checkAuth();
-    return authStore.isAdmin || authStore.isEditor;
+    return authStore.isAdmin;
   },
 });
 </script>

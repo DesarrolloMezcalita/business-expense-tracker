@@ -77,7 +77,9 @@
         label="Sucursales"
       />
 
+      <!-- Only show Users menu item for Admin users -->
       <UButton
+        v-if="authStore.isAdmin"
         to="/users"
         block
         variant="ghost"
