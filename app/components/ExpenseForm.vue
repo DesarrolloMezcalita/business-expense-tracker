@@ -19,16 +19,28 @@
       </UFormField>
     </div>
 
-    <UFormField label="Sucursal" name="sucursalId">
-      <USelect
-        v-model="form.sucursalId"
-        :items="sucursalOptions"
-        class="w-40"
-        placeholder="Selecciona una sucursal"
-        :error="errors.sucursalId"
-        required
-      />
-    </UFormField>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <UFormField label="Sucursal" name="sucursalId">
+        <USelect
+          v-model="form.sucursalId"
+          :items="sucursalOptions"
+          class="w-40"
+          placeholder="Selecciona una sucursal"
+          :error="errors.sucursalId"
+          required
+        />
+      </UFormField>
+
+      <UFormField label="Forma de Pago" name="formaPago">
+        <USelect
+          v-model="form.formaPago"
+          :items="formaPagoOptions"
+          placeholder="Selecciona forma de pago"
+          :error="errors.formaPago"
+          required
+        />
+      </UFormField>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <UFormField label="Subtotal" name="subtotal">
@@ -82,18 +94,6 @@
       />
     </UFormField>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <UFormField label="Forma de Pago" name="formaPago">
-        <USelect
-          v-model="form.formaPago"
-          :items="formaPagoOptions"
-          placeholder="Selecciona forma de pago"
-          :error="errors.formaPago"
-          required
-        />
-      </UFormField>
-    </div>
-
     <!-- Sección de detalles del gasto -->
     <div class="mt-6">
       <div class="flex justify-between items-center mb-4">
@@ -138,6 +138,22 @@
                 placeholder="Nombre del concepto o insumo"
                 required
               />
+            </UFormField>
+
+            <UFormField label="Categoría" name="categoryid">
+              <USelect
+                v-model="expenseItems[index].categoryid"
+                :items="getSubcategoryOptions(index)"
+                placeholder="Selecciona una Categoría"
+                :loading="itemsLoadingSubcategories[index]"
+                required
+              >
+                <template #empty>
+                  <div class="p-2 text-sm text-gray-500">
+                    {{ "No hay categorías disponibles" }}
+                  </div>
+                </template>
+              </USelect>
             </UFormField>
           </div>
 
@@ -246,10 +262,12 @@
 import { ref, reactive, onMounted, watch, computed } from "vue";
 import { useExpenseStore } from "~/stores/expense";
 import { useBranchStore } from "~/stores/branch";
+import { useCategoryStore } from "~/stores/category";
 
 // Initialize stores
 const expenseStore = useExpenseStore();
 const branchStore = useBranchStore();
+const categoryStore = useCategoryStore();
 
 const props = defineProps({
   expense: {
@@ -294,18 +312,42 @@ const errors = reactive({
   categoriaId: "",
 });
 
-// Category options
-const _categoryOptions = [
-  { label: "Alimentación", value: 1 },
-  { label: "Transporte", value: 2 },
-  { label: "Alojamiento", value: 3 },
-  { label: "Material de oficina", value: 4 },
-  { label: "Software", value: 5 },
-  { label: "Equipamiento", value: 6 },
-  { label: "Servicios", value: 7 },
-  { label: "Marketing", value: 8 },
-  { label: "Otros", value: 9 },
-];
+// Subcategory states
+const itemSubcategories = ref({}); // Store subcategories for each item by index
+const itemsLoadingSubcategories = ref({}); // Track loading state for each item
+
+// Function to get subcategory options for a specific item
+const getSubcategoryOptions = (index) => {
+  if (!itemSubcategories.value[index]) {
+    return [];
+  }
+
+  return itemSubcategories.value[index].map((subcategory) => ({
+    label: subcategory.nombre,
+    value: subcategory.id,
+  }));
+};
+
+// Function to load subcategories for a specific item
+const loadItemSubcategories = async (index, subcategoryId) => {
+  // Set loading state for this item
+  itemsLoadingSubcategories.value[index] = true;
+
+  try {
+    // Directly fetch subcategories without filtering by category
+    await categoryStore.fetchSubcategories();
+    itemSubcategories.value[index] = categoryStore.subcategories;
+
+    // If we have a subcategoryId, set it
+    if (subcategoryId) {
+      expenseItems.value[index].categoryid = subcategoryId;
+    }
+  } catch (error) {
+    console.error(`Error fetching subcategories for item ${index}:`, error);
+  } finally {
+    itemsLoadingSubcategories.value[index] = false;
+  }
+};
 
 // Sucursal options - computed from branch store
 const sucursalOptions = computed(() => {
@@ -349,6 +391,13 @@ onMounted(async () => {
     await branchStore.fetchBranches();
   }
 
+  // Fetch all subcategories
+  try {
+    await categoryStore.fetchSubcategories();
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+  }
+
   if (props.expense) {
     form.proveedor = props.expense.proveedor;
     form.subtotal = props.expense.subtotal;
@@ -360,17 +409,19 @@ onMounted(async () => {
     form.sucursalId = props.expense.sucursalId;
     form.validado = props.expense.validado;
     form.formaPago = props.expense.formaPago;
-    form.categoriaId = props.expense.categoriaId;
 
     // Cargar los detalles del gasto si existen
     if (props.expense.items && props.expense.items.length > 0) {
       expenseItems.value = [...props.expense.items];
+
+      // Load subcategories for each item
+      for (let i = 0; i < expenseItems.value.length; i++) {
+        await loadItemSubcategories(i, expenseItems.value[i].categoryid);
+      }
     }
   } else {
     // Set default date to today for new expenses
     form.fecha = new Date().toISOString().split("T")[0];
-    // Set default category for new expenses
-    form.categoriaId = 9; // Categoría "Otros" por defecto
   }
 });
 
@@ -429,11 +480,6 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!form.categoriaId) {
-    errors.categoriaId = "La categoría es requerida";
-    isValid = false;
-  }
-
   if (!form.sucursalId) {
     errors.sucursalId = "La sucursal es requerida";
     isValid = false;
@@ -447,6 +493,17 @@ const validateForm = () => {
   if (form.comprobante && !isValidUrl(form.comprobante)) {
     errors.comprobante = "Ingrese una URL válida";
     isValid = false;
+  }
+
+  // Validate that each expense item has a subcategory
+  for (let i = 0; i < expenseItems.value.length; i++) {
+    const item = expenseItems.value[i];
+
+    if (!item.categoryid) {
+      alert(`El concepto #${i + 1} requiere una categoría`);
+      isValid = false;
+      break;
+    }
   }
 
   return isValid;
@@ -472,7 +529,8 @@ const removeExpenseItem = (index) => {
 };
 
 // Método para agregar un nuevo concepto vacío
-const addNewExpenseItem = () => {
+const addNewExpenseItem = async () => {
+  const newIndex = expenseItems.value.length;
   const newItem = {
     concepto: "",
     nombre: "", // Para compatibilidad con la base de datos
@@ -484,10 +542,18 @@ const addNewExpenseItem = () => {
     descuento: 0,
     impuesto: 0,
     total: "0.00",
-    anomalia: false,
+    categoryid: null,
   };
 
+  // Initialize subcategories array for this item
+  itemSubcategories.value[newIndex] = [];
+  itemsLoadingSubcategories.value[newIndex] = false;
+
   expenseItems.value.push(newItem);
+
+  // Load subcategories for the new item
+  await loadItemSubcategories(newIndex);
+
   // Calcular el subtotal y total iniciales
   updateItemSubtotal(expenseItems.value.length - 1);
 };
@@ -560,14 +626,19 @@ const handleSubmit = async () => {
       sucursalId: form.sucursalId,
       validado: form.validado,
       formaPago: form.formaPago,
-      categoriaId: form.categoriaId,
       items: expenseItems.value.map((item) => {
-        delete item.concepto;
-        delete item.precioUnitario;
+        // Create a copy of the item to avoid modifying the original
+        const itemCopy = { ...item };
 
+        // Remove UI-specific properties
+        delete itemCopy.concepto;
+        delete itemCopy.precioUnitario;
+
+        // Ensure subcategory ID is included
         return {
-          ...item,
+          ...itemCopy,
           compraGastoId: props.expense?.id || 0, // Se actualizará en el servidor
+          categoryid: item.categoryid, // Use subcategoryid as categoryid
         };
       }),
     };

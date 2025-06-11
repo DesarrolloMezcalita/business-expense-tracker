@@ -281,7 +281,12 @@
                     {{ formatDate(expense.fecha) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ expense.proveedor }}
+                    <span
+                      :title="expense.proveedor"
+                      class="inline-block max-w-[150px] truncate"
+                    >
+                      {{ expense.proveedor }}
+                    </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ expense.sucursal?.nombre || "No asignada" }}
@@ -345,7 +350,12 @@
               <div class="flex justify-between items-start mb-3">
                 <div>
                   <h3 class="text-sm font-medium text-gray-900">
-                    {{ expense.proveedor }}
+                    <span
+                      :title="expense.proveedor"
+                      class="inline-block max-w-full truncate"
+                    >
+                      {{ expense.proveedor }}
+                    </span>
                   </h3>
                   <p class="text-xs text-gray-500">
                     {{ formatDate(expense.fecha) }} |

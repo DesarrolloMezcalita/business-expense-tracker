@@ -9,9 +9,9 @@ export const useSupabase = () => {
     const config = useRuntimeConfig();
     const supabaseUrl = config.public.SUPABASE_URL;
     const supabaseKey = config.public.SUPABASE_KEY;
-    
+
     supabaseClient = createClient(supabaseUrl, supabaseKey);
   }
-  
+
   return supabaseClient;
 };

@@ -12,9 +12,9 @@ export interface ExpenseItem {
   created_at?: string; // formato ISO de timestamptz
   updated_at?: string;
   compraGastold?: number;
-  insumold?: number;
-  skuld?: number;
-  anomalia?: boolean;
+  insumoid?: number;
+  skuid?: number;
+  categoryid?: number;
 
   // Campos para compatibilidad con componentes
   nombre?: string; // Alias para concepto

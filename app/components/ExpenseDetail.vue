@@ -53,6 +53,12 @@
                   scope="col"
                   class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
+                  Categoría
+                </th>
+                <th
+                  scope="col"
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Cant
                 </th>
                 <th
@@ -95,6 +101,9 @@
               >
                 <td class="px-4 py-3 whitespace-nowrap text-sm">
                   {{ item.concepto || item.nombre }}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                  {{ getSubcategoryName(item.categoryid) }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm">
                   {{ item.cantidad }}
@@ -154,10 +163,12 @@
       <h4 class="text-sm font-medium text-gray-500 mb-2">Comprobante</h4>
       <div class="border rounded-lg overflow-hidden">
         <img
+          v-if="!imageError"
           :src="expense.comprobante"
           alt="Comprobante"
-          class="w-full h-auto max-h-64 object-contain"
+          class="w-full h-auto max-h-64 object-contain cursor-pointer hover:opacity-90 transition-opacity"
           @error="imageError = true"
+          @click="isImageModalOpen = true"
         />
         <div v-if="imageError" class="p-4 text-center text-gray-500">
           <UIcon name="i-heroicons-photo" class="h-12 w-12 mx-auto mb-2" />
@@ -175,6 +186,31 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para mostrar la imagen en tamaño completo -->
+    <UModal v-model:open="isImageModalOpen" :ui="{ width: 'max-w-5xl' }">
+      <template #header>
+        <div class="flex justify-between w-full items-center mb-4">
+          <h3 class="text-lg font-medium">Comprobante</h3>
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-x-mark"
+            class="rounded-full"
+            @click="isImageModalOpen = false"
+          />
+        </div>
+      </template>
+      <template #body>
+        <div class="flex justify-center">
+          <img
+            :src="expense.comprobante"
+            alt="Comprobante"
+            class="max-w-full max-h-[80vh] object-contain"
+          />
+        </div>
+      </template>
+    </UModal>
   </div>
 
   <div class="flex justify-end space-x-2 mt-5">
@@ -194,9 +230,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useBranchStore } from "~/stores/branch";
+import { useCategoryStore } from "~/stores/category";
 
-// Initialize the branch store
+// Initialize the stores
 const branchStore = useBranchStore();
+const categoryStore = useCategoryStore();
 
 const props = defineProps({
   expense: {
@@ -211,6 +249,7 @@ const props = defineProps({
 
 defineEmits(["close", "edit"]);
 const imageError = ref(false);
+const isImageModalOpen = ref(false);
 
 // Formatters
 const formatCurrency = (amount) => {
@@ -263,11 +302,80 @@ const getSucursalName = (sucursalId) => {
   return branch ? branch.nombre : `Sucursal ${sucursalId}`;
 };
 
-// Fetch branches when component is mounted
+// Helper function to get subcategory name
+const getSubcategoryName = (subcategoryId) => {
+  if (!subcategoryId) return "No asignada";
+
+  // Buscar en las subcategorías cargadas
+  const subcategory = categoryStore.subcategories.find(
+    (s) => s.id === subcategoryId
+  );
+
+  if (subcategory) {
+    // Si la subcategoría tiene una referencia a su categoría padre, mostrar ambos nombres
+    if (subcategory.category && subcategory.category.nombre) {
+      return `${subcategory.category.nombre} - ${subcategory.nombre}`;
+    }
+    return subcategory.nombre;
+  }
+
+  // Si no se encuentra, intentar cargar la subcategoría específica
+  categoryStore
+    .fetchSubcategory(subcategoryId)
+    .then((subcategory) => {
+      if (subcategory) {
+        // La subcategoría se cargará en el store, y la vista se actualizará automáticamente
+        console.log("Subcategoría cargada:", subcategory);
+      }
+    })
+    .catch((error) => {
+      console.error("Error al cargar la subcategoría:", error);
+    });
+
+  // Mientras tanto, mostrar un valor temporal
+  return `Cargando categoría...`;
+};
+
+// Fetch data when component is mounted
 onMounted(async () => {
-  // Only fetch if branches haven't been loaded yet
-  if (branchStore.branches.length === 0) {
-    await branchStore.fetchBranches();
+  try {
+    // Only fetch if branches haven't been loaded yet
+    if (branchStore.branches.length === 0) {
+      await branchStore.fetchBranches();
+    }
+
+    // Siempre cargar las subcategorías para asegurar datos actualizados
+    await categoryStore.fetchSubcategories();
+
+    // Si el gasto tiene items con categoryid, precargar esas subcategorías específicas
+    if (
+      props.expense &&
+      props.expense.items &&
+      props.expense.items.length > 0
+    ) {
+      const categoryIds = props.expense.items
+        .map((item) => item.categoryid)
+        .filter((id) => id); // Filtrar valores nulos o undefined
+
+      // Cargar subcategorías específicas si no están en el store
+      for (const categoryId of categoryIds) {
+        const exists = categoryStore.subcategories.some(
+          (s) => s.id === categoryId
+        );
+        if (!exists) {
+          try {
+            await categoryStore.fetchSubcategory(categoryId);
+          } catch (error) {
+            console.error(
+              `Error al cargar la subcategoría ${categoryId}:`,
+              error
+            );
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error al cargar datos iniciales:", error);
   }
 });
 
