@@ -158,26 +158,19 @@ export const useExpenseStore = defineStore('expense', {
             items:compra_gasto_detalles(*),
             sucursal:sucursales(id, nombre)
           `);
-
-        console.log("fetch this.filters", this.filters);
-        
         
         // Aplicar filtros de fecha a la consulta
-        if (this.filters.dateFrom) {
-          const fromDate = new Date(this.filters.dateFrom);
+        if (this.filters.date) {
+          const date = new Date(this.filters.date);
           // Formatear la fecha como YYYY-MM-DD para la consulta SQL
-          const formattedFromDate = fromDate.toISOString().split('T')[0];
-          query = query.gte('fecha', formattedFromDate);
-          console.log("this.filters.dateFrom", this.filters.dateFrom);
+          const formattedDate = date.toISOString().split('T')[0];
+          query = query.gte('fecha', formattedDate);
         }
 
         
-        
-        if (this.filters.dateTo) {
-          const toDate = new Date(this.filters.dateTo);
-          // Formatear la fecha como YYYY-MM-DD para la consulta SQL
-          const formattedToDate = toDate.toISOString().split('T')[0];
-          query = query.lte('fecha', formattedToDate);
+        // Aplicar filtros de fecha a la consulta
+        if (this.filters.sucursalId) {
+          query = query.gte('sucursalId', this.filters.sucursalId);
         }
         
         // Aplicar ordenación
@@ -186,20 +179,7 @@ export const useExpenseStore = defineStore('expense', {
         const { data, error } = await query;
         
         if (error) {
-          console.warn('Error fetching expenses from Supabase, using mock data:', error);
-          // Usar datos de prueba si falla la consulta a Supabase
-          const authStore = useAuthStore();
-          const userId = authStore.user?.id || 'user-id-1';
-          
-          // Obtener los datos de prueba del plugin
-          const nuxtApp = useNuxtApp();
-          const mockData = nuxtApp.$mockExpenses || [];
-          
-          // Reemplazar el user_id en los datos de prueba con el ID del usuario actual
-          this.expenses = mockData.map(expense => ({
-            ...expense,
-            user_id: userId
-          }));
+          console.warn('Error fetching expenses from Supabase:', error);
         } else {
           this.expenses = data;
         }
@@ -262,6 +242,45 @@ export const useExpenseStore = defineStore('expense', {
         this.error = error.message;
         console.error(`Error fetching expense with ID ${id}:`, error);
         return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchExpensesTotals() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const supabase = useSupabase();
+        
+        let query = supabase
+          .from('compras_gastos')
+          .select(`*`);
+        
+        // Aplicar filtros de fecha a la consulta
+        if (this.filters.date) {
+          const date = new Date(this.filters.date);
+          // Formatear la fecha como YYYY-MM-DD para la consulta SQL
+          const formattedDate = date.toISOString().split('T')[0];
+          query = query.eq('fecha', formattedDate);
+        }
+
+        // Aplicar filtros de sucursal a la consulta
+        if (this.filters.sucursalId) {
+          query = query.eq('sucursalId', this.filters.sucursalId);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) {
+          console.warn('Error fetching expenses from Supabase:', error);
+        } else {
+          this.expenses = data;
+        }
+      } catch (error) {
+        this.error = error.message;
+        console.error('Error fetching expenses totals:', error);
       } finally {
         this.loading = false;
       }
@@ -532,6 +551,16 @@ export const useExpenseStore = defineStore('expense', {
       
       // Volver a cargar los datos con los nuevos filtros
       await this.fetchExpenses();
+    },
+
+    
+    // Filter actions
+    async setFilters2(filters) {
+      this.filters = { ...this.filters, ...filters };
+      this.pagination.page = 1; // Reset to first page when applying filters
+      
+      // Volver a cargar los datos con los nuevos filtros
+      await this.fetchExpensesTotals();
     },
     
     setSorting(field, descending = false) {

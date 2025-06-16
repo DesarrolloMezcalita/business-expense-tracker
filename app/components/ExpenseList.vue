@@ -748,6 +748,8 @@ onMounted(async () => {
     await branchStore.fetchBranches();
   }
 
+  await expenseStore.clearFilters();
+
   // Cargar gastos
   if (!expenseStore.expenses.length) {
     await expenseStore.fetchExpenses();

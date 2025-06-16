@@ -23,6 +23,11 @@
         <h4 class="text-sm font-medium text-gray-500">Sucursal</h4>
         <p class="mt-1">{{ getSucursalName(expense.sucursalId) }}</p>
       </div>
+
+      <div>
+        <h4 class="text-sm font-medium text-gray-500">Forma de Pago</h4>
+        <p class="mt-1">{{ expense.formaPago }}</p>
+      </div>
     </div>
 
     <!-- Detalles del gasto (insumos o conceptos) -->
@@ -151,11 +156,6 @@
       <div>
         <h4 class="text-sm font-medium text-gray-500">Total</h4>
         <p class="mt-1 font-medium">{{ formatCurrency(expense.total) }}</p>
-      </div>
-
-      <div>
-        <h4 class="text-sm font-medium text-gray-500">Forma de Pago</h4>
-        <p class="mt-1">{{ expense.formaPago }}</p>
       </div>
     </div>
 
