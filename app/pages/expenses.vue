@@ -16,7 +16,7 @@
     />
 
     <!-- Modal de formulario de gastos -->
-    <UModal v-model:open="showForm">
+    <UModal v-model:open="showForm" :ui="{ content: 'max-w-2xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium">
@@ -42,7 +42,7 @@
     </UModal>
 
     <!-- Modal de detalles de gasto -->
-    <UModal v-model:open="showDetail">
+    <UModal v-model:open="showDetail" :ui="{ content: 'max-w-4xl' }">
       <template #header>
         <div class="flex items-center justify-between w-full">
           <h3 class="text-lg font-medium">Detalles del Gasto</h3>
@@ -119,7 +119,7 @@ const editExpense = (expense) => {
     descuento: item.descuento,
     impuesto: item.impuesto,
     total: item.total,
-    anomalia: item.anomalia,
+    categoryid: item.categoryid,
   }));
 
   currentExpense.value = expense;

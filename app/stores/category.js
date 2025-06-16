@@ -184,10 +184,10 @@ export const useCategoryStore = defineStore('category', {
         
         let query = supabase
           .from('subcategorias_gastos')
-          .select('*, category:category_id(*)');
+          .select('*');
         
         if (categoryId) {
-          query = query.eq('category_id', categoryId);
+          query = query.eq('categoria_id', categoryId);
         }
         
         const { data, error } = await query;
