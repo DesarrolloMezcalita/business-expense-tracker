@@ -738,7 +738,19 @@ const formatCurrency = (amount) => {
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-MX").format(date);
+
+  // Opciones de formato, especificando que la zona horaria debe ser UTC.
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "UTC", // ¡Esta es la clave!
+  };
+
+  // Usamos el locale 'es-MX' para el formato DD/MM/YYYY y las opciones con UTC.
+  // Nota: es-MX naturalmente usa DD/MM/YYYY. Si necesitaras otro locale como 'en-US' (MM/DD/YYYY),
+  // las opciones de year, month, day te darían control.
+  return new Intl.DateTimeFormat("es-MX", options).format(date);
 };
 
 // Cargar datos al montar el componente

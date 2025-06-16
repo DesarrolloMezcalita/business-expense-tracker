@@ -506,13 +506,21 @@ async function deleteBranch() {
 function formatDate(dateString) {
   if (!dateString) return "";
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-MX", {
+
+  // Opciones de formato, especificando que la zona horaria debe ser UTC.
+  const options = {
     year: "numeric",
     month: "long",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(date);
+    timeZone: "UTC", // ¡Esta es la clave!
+  };
+
+  // Usamos el locale 'es-MX' para el formato DD/MM/YYYY y las opciones con UTC.
+  // Nota: es-MX naturalmente usa DD/MM/YYYY. Si necesitaras otro locale como 'en-US' (MM/DD/YYYY),
+  // las opciones de year, month, day te darían control.
+  return new Intl.DateTimeFormat("es-MX", options).format(date);
 }
 
 onMounted(async () => {
