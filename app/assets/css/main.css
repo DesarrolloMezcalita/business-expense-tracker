@@ -2,26 +2,24 @@
 @import "@nuxt/ui";
 @import "./dark-mode.css";
 
+
+:root, .light {
+  --ui-primary: var(--ui-color-slate-900);
+}
+
+.dark {
+  --ui-primary: var(--ui-color-slate-600);
+}
+
 /* Base theme variables */
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
-
-  /* Green color palette */
-  --color-green-50: #effdf5;
-  --color-green-100: #d9fbe8;
-  --color-green-200: #b3f5d1;
-  --color-green-300: #75edae;
-  --color-green-400: #00dc82;
-  --color-green-500: #00c16a;
-  --color-green-600: #00a155;
-  --color-green-700: #007f45;
-  --color-green-800: #016538;
-  --color-green-900: #0a5331;
-  --color-green-950: #052e16;
 }
 
 /* Light mode specific variables */
 @theme light {
+  --ui-color-slate-900: #314158;
+
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f9fafb;
   --color-bg-tertiary: #f3f4f6;
@@ -34,13 +32,12 @@
   --color-border-secondary: #d1d5db;
   
   --color-shadow: rgba(0, 0, 0, 0.1);
-  
-  /* Ensure good contrast for primary colors in light mode */
-  --color-primary-contrast: var(--color-green-700);
 }
 
 /* Dark mode specific variables */
 @theme dark {
+  --ui-color-slate-600: #90a1b9;
+
   --color-bg-primary: #111827;
   --color-bg-secondary: #1f2937;
   --color-bg-tertiary: #374151;
@@ -53,9 +50,6 @@
   --color-border-secondary: #4b5563;
   
   --color-shadow: rgba(0, 0, 0, 0.3);
-  
-  /* Ensure good contrast for primary colors in dark mode */
-  --color-primary-contrast: var(--color-green-300);
 }
 
 /* Smooth transition for theme changes */

@@ -3,12 +3,13 @@
     <!-- Encabezado y botón de agregar -->
     <div class="flex justify-between items-center p-6 border-b">
       <h1 class="text-2xl font-bold text-gray-800">Gestión de SKUs</h1>
-      <button
+      <UButton
+        color="primary"
+        icon="i-heroicons-plus"
         @click="showAddForm = true"
-        class="flex items-center px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
       >
-        <span class="mr-1">+</span> Agregar SKU
-      </button>
+        Agregar SKU
+      </UButton>
     </div>
 
     <!-- Barra de búsqueda y filtros -->

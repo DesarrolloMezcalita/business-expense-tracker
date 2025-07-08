@@ -3,7 +3,6 @@ export default defineAppConfig({
   ui: {
     // Primary and neutral colors for the application
     colors: {
-      primary: "green",
       neutral: "slate",
     },
     // Dark mode configuration
