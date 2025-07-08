@@ -13,9 +13,13 @@ import { onMounted, watch } from "vue";
 
 const colorMode = useColorMode();
 
-// Initialize color mode based on user preference or system preference
+// Initialize color mode - always use light mode by default
 onMounted(() => {
   if (import.meta.client) {
+    // Force light mode
+    colorMode.value = "light";
+    colorMode.preference = "light";
+
     // Apply initial color mode class to html element for Tailwind dark mode
     updateHtmlClass();
 
@@ -25,6 +29,9 @@ onMounted(() => {
       "duration-300",
       "ease-in-out"
     );
+
+    // Ensure light mode is applied immediately
+    document.documentElement.classList.remove("dark");
   }
 });
 
