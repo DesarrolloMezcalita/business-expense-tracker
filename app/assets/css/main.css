@@ -1,9 +1,12 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import "./dark-mode.css";
 
+/* Base theme variables */
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
 
+  /* Green color palette */
   --color-green-50: #effdf5;
   --color-green-100: #d9fbe8;
   --color-green-200: #b3f5d1;
@@ -15,4 +18,62 @@
   --color-green-800: #016538;
   --color-green-900: #0a5331;
   --color-green-950: #052e16;
+}
+
+/* Light mode specific variables */
+@theme light {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  
+  --color-border-primary: #e5e7eb;
+  --color-border-secondary: #d1d5db;
+  
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Ensure good contrast for primary colors in light mode */
+  --color-primary-contrast: var(--color-green-700);
+}
+
+/* Dark mode specific variables */
+@theme dark {
+  --color-bg-primary: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-bg-tertiary: #374151;
+  
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #e5e7eb;
+  --color-text-tertiary: #d1d5db;
+  
+  --color-border-primary: #374151;
+  --color-border-secondary: #4b5563;
+  
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Ensure good contrast for primary colors in dark mode */
+  --color-primary-contrast: var(--color-green-300);
+}
+
+/* Smooth transition for theme changes */
+/* Use Tailwind's built-in transition classes instead:
+   - transition-colors
+   - duration-300
+   - ease-in-out
+*/
+
+/* Apply transitions to common elements */
+body,
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.text-gray-700,
+.text-gray-800,
+.text-gray-900,
+.border-gray-200,
+.border-gray-300 {
+  @apply transition-colors duration-300 ease-in-out;
 }

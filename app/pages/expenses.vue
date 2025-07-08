@@ -2,7 +2,7 @@
   <div>
     <div class="mb-6">
       <h1 class="text-2xl font-bold">Gestor de Gastos</h1>
-      <p class="text-gray-600 mt-1">
+      <p class="text-gray-600 dark:text-gray-400 mt-1">
         Administra tus gastos empresariales de manera eficiente
       </p>
     </div>

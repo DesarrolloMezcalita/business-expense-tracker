@@ -68,7 +68,8 @@
           </template>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >Estado</label
               >
               <USelect
@@ -78,7 +79,8 @@
               />
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >Ordenar Por</label
               >
               <USelect
@@ -95,41 +97,43 @@
         <UCard>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Nombre
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Correo
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Rol
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Estado
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody
+                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+              >
                 <tr v-if="loading">
                   <td colspan="6" class="px-6 py-4 text-center">Loading...</td>
                 </tr>
@@ -141,7 +145,7 @@
                 <tr
                   v-for="user in paginatedUsers"
                   :key="user.id"
-                  class="hover:bg-gray-50"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
@@ -194,7 +198,7 @@
           <!-- Pagination -->
           <template #footer>
             <div class="flex items-center justify-between">
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
                 Mostrando {{ paginatedUsers.length }} de
                 {{ filteredUsers.length }} usuarios
               </p>
@@ -265,7 +269,8 @@
           </template>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >Estado</label
               >
               <USelect
@@ -275,7 +280,8 @@
               />
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >Ordenar Por</label
               >
               <USelect
@@ -292,35 +298,37 @@
         <UCard>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Nombre
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Teléfono
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Estado
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody
+                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+              >
                 <tr v-if="loading">
                   <td colspan="6" class="px-6 py-4 text-center">Loading...</td>
                 </tr>
@@ -332,7 +340,7 @@
                 <tr
                   v-for="user in waPaginatedUsers"
                   :key="user.id"
-                  class="hover:bg-gray-50"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">{{ user.phone }}</td>
@@ -377,7 +385,7 @@
           <!-- Pagination -->
           <template #footer>
             <div class="flex items-center justify-between">
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
                 Mostrando {{ waPaginatedUsers.length }} de
                 {{ waFilteredUsers.length }} usuarios
               </p>
@@ -483,20 +491,24 @@
             Detailed information about the selected user
           </p>
           <div class="flex items-center space-x-4">
-            <div class="bg-gray-100 rounded-full p-4">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-full p-4">
               <UIcon name="i-heroicons-user-circle" class="text-3xl" />
             </div>
             <div>
               <h4 class="text-xl font-medium">{{ viewingUser.name }}</h4>
-              <p class="text-gray-500">{{ viewingUser.email }}</p>
+              <p class="text-gray-500 dark:text-gray-400">
+                {{ viewingUser.email }}
+              </p>
             </div>
           </div>
 
-          <hr class="my-4 border-t border-gray-200" />
+          <hr class="my-4 border-t border-gray-200 dark:border-gray-700" />
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 class="text-sm font-medium text-gray-500">Rol</h5>
+              <h5 class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Rol
+              </h5>
               <UBadge
                 :color="getRoleBadgeColor(viewingUser.role)"
                 variant="subtle"
