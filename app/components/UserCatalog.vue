@@ -17,30 +17,32 @@
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
     >
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="space-y-2">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >Rol</label
-          >
-          <USelect
-            v-model="roleFilter"
-            :items="roleOptions"
-            @update:model-value="applyFilters"
-          />
+      <template #filters>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >Rol</label
+            >
+            <USelect
+              v-model="roleFilter"
+              :items="roleOptions"
+              @update:model-value="applyFilters"
+            />
+          </div>
+          <div class="space-y-2">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >Estado</label
+            >
+            <USelect
+              v-model="statusFilter"
+              :items="statusOptions"
+              @update:model-value="applyFilters"
+            />
+          </div>
         </div>
-        <div class="space-y-2">
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >Estado</label
-          >
-          <USelect
-            v-model="statusFilter"
-            :items="statusOptions"
-            @update:model-value="applyFilters"
-          />
-        </div>
-      </div>
+      </template>
     </BaseCatalogFilters>
 
     <!-- Users Table -->

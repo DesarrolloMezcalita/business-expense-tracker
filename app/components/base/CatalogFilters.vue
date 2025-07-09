@@ -12,6 +12,7 @@
             @update:model-value="$emit('applyFilters')"
           />
           <UButton
+            v-if="$slots.filters"
             icon="i-heroicons-adjustments-horizontal"
             :variant="isAdvancedFilterOpen ? 'solid' : 'outline'"
             class="ml-2"
@@ -21,7 +22,7 @@
       </div>
       <div class="flex gap-2">
         <UButton
-          v-if="hasActiveFilters"
+          v-if="hasActiveFilters && $slots.filters"
           icon="i-heroicons-x-mark"
           variant="ghost"
           label="Restablecer Filtros"
@@ -31,7 +32,7 @@
     </div>
 
     <!-- Advanced Filter Panel -->
-    <UCard v-if="isAdvancedFilterOpen" class="mb-6">
+    <UCard v-if="isAdvancedFilterOpen && $slots.filters" class="mb-6">
       <template #header>
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-medium">Filtros Avanzados</h3>
@@ -43,7 +44,7 @@
         </div>
       </template>
 
-      <slot />
+      <slot name="filters" />
     </UCard>
   </div>
 </template>
