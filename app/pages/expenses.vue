@@ -26,8 +26,8 @@
             icon="i-heroicons-x-mark"
             color="gray"
             variant="ghost"
-            @click="cancelForm"
             aria-label="Close"
+            @click="cancelForm"
           />
         </div>
       </template>

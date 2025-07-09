@@ -56,11 +56,6 @@ export const useWAUserStore = defineStore('wauser', {
         if (error) throw error;
         
         this.wausers = data || [];
-        
-        // If no users exist in the database, seed with initial data
-        if (this.wausers.length === 0) {
-          await this.seedInitialUsers();
-        }
       } catch (error) {
         this.error = error.message || 'Failed to fetch wa users';
         console.error('Error fetching wa users:', error);

@@ -87,8 +87,7 @@
       <UButton
         type="button"
         label="Cancelar"
-        color="gray"
-        variant="outline"
+        variant="soft"
         @click="$emit('cancel')"
       />
       <UButton
