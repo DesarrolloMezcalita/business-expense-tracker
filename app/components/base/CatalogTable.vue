@@ -32,7 +32,7 @@
     <template v-if="totalCount" #footer>
       <div class="flex items-center justify-between">
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Mostrando {{ paginatedRange }} de {{ totalCount }} usuarios
+          Mostrando {{ paginatedRange }} de {{ totalCount }}
         </p>
         <UPagination
           v-model:page="page"

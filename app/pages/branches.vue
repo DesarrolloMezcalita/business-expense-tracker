@@ -139,8 +139,6 @@ const loading = ref<boolean>(true);
 const page = ref(1);
 const perPage = ref(10);
 const searchQuery = ref("");
-const roleFilter = ref(null);
-const statusFilter = ref(null);
 
 // // Modal states
 const isAddModalOpen = ref(false);
@@ -199,7 +197,7 @@ const pageCount = computed(() => {
 });
 
 const hasActiveFilters = computed(() => {
-  if (searchQuery.value || roleFilter.value || statusFilter.value) return true;
+  if (searchQuery.value) return true;
 
   return false;
 });
@@ -211,8 +209,6 @@ function applyFilters() {
 
 function resetFilters() {
   searchQuery.value = "";
-  roleFilter.value = null;
-  statusFilter.value = null;
   page.value = 1;
 }
 
