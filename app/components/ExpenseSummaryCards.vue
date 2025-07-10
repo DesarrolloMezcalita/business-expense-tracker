@@ -1,13 +1,9 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Total de gastos acumulados -->
-    <UCard class="bg-blue-500 text-white">
+    <UCard class="light:bg-gray-700 dark:bg-gray-800 text-white">
       <div class="flex justify-between items-start">
         <h3 class="text-xl font-medium">Total de Gastos</h3>
-        <UIcon
-          name="i-heroicons-user"
-          class="text-2xl bg-blue-400 p-2 rounded-full"
-        />
       </div>
       <div class="mt-4">
         <p class="text-4xl font-bold">${{ formatCurrency(totalExpenses) }}</p>
@@ -18,10 +14,6 @@
     <UCard class="bg-gray-100">
       <div class="flex justify-between items-start">
         <h3 class="text-xl font-medium text-gray-800">Pago con Tarjeta</h3>
-        <UIcon
-          name="i-heroicons-credit-card"
-          class="text-2xl bg-blue-100 text-blue-500 p-2 rounded-full"
-        />
       </div>
       <div class="mt-4">
         <p class="text-4xl font-bold text-gray-800">
@@ -34,10 +26,6 @@
     <UCard class="bg-gray-100">
       <div class="flex justify-between items-start">
         <h3 class="text-xl font-medium text-gray-800">Pago en Efectivo</h3>
-        <UIcon
-          name="i-heroicons-banknotes"
-          class="text-2xl bg-green-100 text-green-500 p-2 rounded-full"
-        />
       </div>
       <div class="mt-4">
         <p class="text-4xl font-bold text-gray-800">
@@ -49,11 +37,9 @@
     <!-- Análisis por subcategoría -->
     <UCard class="bg-gray-100">
       <div class="flex justify-between items-start">
-        <h3 class="text-xl font-medium text-gray-800">Transferencias</h3>
-        <UIcon
-          name="i-heroicons-arrow-path-rounded-square"
-          class="text-2xl bg-purple-100 text-purple-500 p-2 rounded-full"
-        />
+        <h3 class="text-xl font-medium text-gray-800">
+          Pago con Transferencias
+        </h3>
       </div>
       <div class="mt-4">
         <p class="text-4xl font-bold text-gray-800">
