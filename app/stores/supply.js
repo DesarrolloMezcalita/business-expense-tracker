@@ -61,6 +61,31 @@ export const useSupplyStore = defineStore('supply', {
       }
     },
 
+    async fetchAllSupplies() {
+      this.error = null;
+
+      try {
+        const supabase = useSupabase();
+
+        // Construir consulta base
+        let query = supabase
+          .from('insumos')
+          .select('*', { count: 'exact' });
+
+        // Aplicar paginación
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        this.supplies = data;
+      } catch (error) {
+        this.error = error.message;
+        console.error('Error fetching supplies:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async fetchSupply(id) {
       this.error = null;
 
