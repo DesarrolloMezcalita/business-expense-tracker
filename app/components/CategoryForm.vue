@@ -1,54 +1,59 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-      {{ isEditing ? "Editar Categoría" : "Agregar Nueva Categoría" }}
-    </h2>
-
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <div class="grid grid-cols-1 gap-4">
-        <!-- Nombre -->
-        <div>
-          <label
-            for="name"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Nombre
-          </label>
-          <input
-            id="name"
-            v-model="form.nombre"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            required
-          />
-        </div>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Nombre -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+          Nombre
+        </label>
+        <input
+          id="name"
+          v-model="form.nombre"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          required
+        />
       </div>
+    </div>
 
-      <!-- Botones -->
-      <div class="flex justify-end space-x-3">
-        <button
-          type="button"
-          @click="$emit('cancel')"
-          class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          :disabled="categoryStore.loading"
-        >
-          {{
-            categoryStore.loading
-              ? "Guardando..."
-              : isEditing
-              ? "Actualizar"
-              : "Guardar"
-          }}
-        </button>
-      </div>
-    </form>
-  </div>
+    <!-- Botones -->
+    <div class="flex justify-end gap-2 mt-6">
+      <UButton
+        type="button"
+        label="Cancelar"
+        variant="soft"
+        @click="$emit('cancel')"
+      />
+      <UButton
+        type="submit"
+        :label="isEditing ? 'Actualizar Categoría' : 'Agregar Categoría'"
+        :loading="isSubmitting"
+        :disabled="categoryStore.loading"
+      />
+    </div>
+    <!-- <div class="flex justify-end space-x-3">
+      <button
+        type="button"
+        @click="$emit('cancel')"
+        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        :disabled="categoryStore.loading"
+      >
+        {{
+          categoryStore.loading
+            ? "Guardando..."
+            : isEditing
+            ? "Actualizar"
+            : "Guardar"
+        }}
+      </button>
+    </div> -->
+  </form>
 </template>
 
 <script setup>
