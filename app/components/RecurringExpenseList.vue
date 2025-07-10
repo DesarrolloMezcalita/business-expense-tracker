@@ -414,7 +414,32 @@
     </div>
 
     <!-- Modal de confirmación de eliminación -->
-    <UModal v-model="showDeleteModal">
+    <BaseModal v-model="showDeleteModal" title="Confirmar eliminación">
+      <div aria-describedby="delete-user-description">
+        <p id="delete-user-description">
+          ¿Está seguro que desea eliminar este gasto recurrente
+          <strong>{{ expenseToDelete?.nombre }}</strong
+          >? Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton
+            label="Cancelar"
+            variant="soft"
+            @click="showDeleteModal = false"
+          />
+          <UButton
+            label="Eliminar"
+            color="error"
+            icon="i-heroicons-trash"
+            @click="deleteExpense"
+          />
+        </div>
+      </template>
+    </BaseModal>
+    <!-- <UModal v-model="showDeleteModal">
       <template #header>
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-medium">Confirmar eliminación</h3>
@@ -449,7 +474,7 @@
           </UButton>
         </div>
       </template>
-    </UModal>
+    </UModal> -->
 
     <!-- Modal de confirmación de cambio de estado -->
     <UModal v-model="showToggleModal">
