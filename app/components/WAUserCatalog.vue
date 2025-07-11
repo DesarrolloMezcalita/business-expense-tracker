@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">Sucursales</h1>
+      <h1 class="text-3xl font-bold">Usuarios de WhatsApp</h1>
       <UButton
         icon="i-heroicons-plus"
-        label="Agregar Sucursal"
+        label="Agregar Usuario"
         @click="isAddModalOpen = true"
       />
     </div>
@@ -12,39 +12,61 @@
     <!-- Filter Panel -->
     <BaseCatalogFilters
       v-model:search-query="searchQuery"
-      search-placeholder="Buscar por nombre"
+      search-placeholder="Buscar por nombre o teléfono"
       :has-active-filters="hasActiveFilters"
       @apply-filters="applyFilters"
       @reset-filters="resetFilters"
-    />
+    >
+      <template #filters>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >Estado</label
+            >
+            <USelect
+              v-model="statusFilter"
+              :items="statusOptions"
+              @update:model-value="applyFilters"
+            />
+          </div>
+        </div>
+      </template>
+    </BaseCatalogFilters>
 
     <!-- Users Table -->
     <BaseCatalogTable
       v-model:current-page="page"
       :page-count="pageCount"
       :paginated-range="paginatedRange"
-      :total-count="filteredBranches.length"
-      :columns="['Nombre', 'Fecha de Creación']"
+      :total-count="filteredUsers.length"
+      :columns="['Nombre', 'Teléfono', 'Estado']"
     >
       <!-- No Items Placeholder -->
       <tr v-if="loading">
         <td colspan="6" class="px-6 py-4 text-center">Cargando...</td>
       </tr>
-      <tr v-else-if="paginatedBranches.length === 0">
+      <tr v-else-if="paginatedUsers.length === 0">
         <td colspan="6" class="px-6 py-4 text-center">
-          No se encontraron sucursales
+          No se encontraron usuarios
         </td>
       </tr>
 
       <!-- Row Item Details -->
       <tr
-        v-for="branch in paginatedBranches"
-        :key="branch.id"
+        v-for="user in paginatedUsers"
+        :key="user.id"
         class="hover:bg-gray-50 dark:hover:bg-gray-700"
       >
-        <td class="px-6 py-4 whitespace-nowrap">{{ branch.nombre }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">{{ user.phone }}</td>
         <td class="px-6 py-4 whitespace-nowrap">
-          {{ formatDate(branch.created_at) }}
+          <UBadge
+            :color="user.is_active ? 'success' : 'error'"
+            variant="subtle"
+          >
+            {{ user.is_active ? "Active" : "Inactive" }}
+          </UBadge>
         </td>
 
         <!-- Row Actions -->
@@ -54,19 +76,19 @@
               icon="i-heroicons-eye"
               variant="ghost"
               title="View Details"
-              @click="viewBranch(branch)"
+              @click="viewUser(user)"
             />
             <UButton
               icon="i-heroicons-pencil-square"
               variant="ghost"
-              title="Edit Branch"
-              @click="editBranch(branch)"
+              title="Edit User"
+              @click="editUser(user)"
             />
             <UButton
               icon="i-heroicons-trash"
               variant="ghost"
-              title="Delete Branch"
-              @click="confirmDeleteBranch(branch)"
+              title="Delete User"
+              @click="confirmDeleteUser(user)"
             />
           </div>
         </td>
@@ -74,28 +96,28 @@
     </BaseCatalogTable>
 
     <!-- Add User Modal -->
-    <BaseModal v-model="isAddModalOpen" title="Agregar Nueva Sucursal">
-      <BranchForm
-        :branch="newBranch"
-        @submit="addBranch"
+    <BaseModal v-model="isAddModalOpen" title="Agregar Nuevo Usuario">
+      <WAUserForm
+        :user="newUser"
+        @submit="addUser"
         @cancel="isAddModalOpen = false"
       />
     </BaseModal>
 
     <!-- Edit User Modal -->
-    <BaseModal v-model="isEditModalOpen" title="Editar Sucursal">
-      <BranchForm
-        :branch="editingBranch"
+    <BaseModal v-model="isEditModalOpen" title="Editar Usuario">
+      <WAUserForm
+        :user="editingUser"
         :is-editing="true"
-        @submit="updateBranch"
+        @submit="updateUser"
         @cancel="isEditModalOpen = false"
       />
     </BaseModal>
 
     <!-- View User Modal -->
-    <BaseModal v-model="isViewModalOpen" title="Detalles de Sucursal">
-      <BranchView
-        :branch="viewingBranch"
+    <BaseModal v-model="isViewModalOpen" title="Detalles de Usuario">
+      <UserView
+        :user="viewingUser"
         @edit="editFromViewModal"
         @cancel="isViewModalOpen = false"
       />
@@ -105,8 +127,8 @@
     <BaseModal v-model="isDeleteModalOpen" title="Confirmar Eliminación">
       <div aria-describedby="delete-user-description">
         <p id="delete-user-description">
-          ¿Está seguro que desea eliminar la sucursal
-          <strong>{{ deletingBranch?.nombre }}</strong
+          ¿Está seguro que desea eliminar al usuario
+          <strong>{{ deletingUser?.name }}</strong
           >? Esta acción no se puede deshacer.
         </p>
       </div>
@@ -122,7 +144,7 @@
             label="Eliminar"
             color="error"
             icon="i-heroicons-trash"
-            @click="deleteBranch"
+            @click="deleteUser"
           />
         </div>
       </template>
@@ -132,143 +154,135 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import { useBranchStore } from "~/stores/branch";
+import { useWAUserStore } from "~/stores/wauser";
 
-const branchStore = useBranchStore();
+const userStore = useWAUserStore();
 const loading = ref<boolean>(true);
 const page = ref(1);
 const perPage = ref(10);
 const searchQuery = ref("");
+const statusFilter = ref(null);
 
-// // Modal states
+// Modal states
 const isAddModalOpen = ref(false);
 const isEditModalOpen = ref(false);
 const isViewModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-// // User data
-const defaultBranch = {
-  nombre: "",
+// User data
+const defaultUser = {
+  name: "",
+  phone: "",
+  is_active: true,
   created_at: new Date().toISOString(),
 };
 
-const newBranch = ref({ ...defaultBranch });
-const editingBranch = ref({ ...defaultBranch });
-const viewingBranch = ref({ id: 0, ...defaultBranch });
-const deletingBranch = ref({ id: 0, ...defaultBranch });
+const newUser = ref({ ...defaultUser });
+const editingUser = ref({ ...defaultUser });
+const viewingUser = ref({ id: 0, ...defaultUser });
+const deletingUser = ref({ id: 0, ...defaultUser });
 
-// // Table configuration
-// // We're now using a simple HTML table instead of UTable
+// Table configuration
+// We're now using a simple HTML table instead of UTable
 
-// // Filter options
+const statusOptions = [
+  { label: "Todos", value: null },
+  { label: "Activo", value: true },
+  { label: "Inactivo", value: false },
+];
 
-// /* Computed properties */
-const filteredBranches = computed(() => {
-  let result = [...branchStore.branches];
+/* Computed properties */
+const filteredUsers = computed(() => {
+  let result = [...userStore.wausers];
 
   // Apply search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    result = result.filter((branch) =>
-      branch.nombre.toLowerCase().includes(query)
+    result = result.filter(
+      (user) =>
+        user.name.toLowerCase().includes(query) ||
+        user.phone.toLowerCase().includes(query)
     );
+  }
+
+  // Apply status filter
+  if (statusFilter.value !== null) {
+    result = result.filter((user) => user.is_active === statusFilter.value);
   }
 
   return result;
 });
 
-const paginatedBranches = computed(() => {
+const paginatedUsers = computed(() => {
   const start = (page.value - 1) * perPage.value;
   const end = start + perPage.value;
-  return filteredBranches.value.slice(start, end);
+  return filteredUsers.value.slice(start, end);
 });
 
 const paginatedRange = computed(() => {
   const start = (page.value - 1) * perPage.value + 1;
-  const end = Math.min(
-    start + perPage.value - 1,
-    filteredBranches.value.length
-  );
+  const end = Math.min(start + perPage.value - 1, filteredUsers.value.length);
   return `${start}-${end}`;
 });
 
 const pageCount = computed(() => {
-  return Math.ceil(filteredBranches.value.length / perPage.value);
+  return Math.ceil(filteredUsers.value.length / perPage.value);
 });
 
 const hasActiveFilters = computed(() => {
-  if (searchQuery.value) return true;
+  if (searchQuery.value || statusFilter.value) return true;
 
   return false;
 });
 
-// /* Methods */
+/* Methods */
 function applyFilters() {
   page.value = 1;
 }
 
 function resetFilters() {
   searchQuery.value = "";
+  statusFilter.value = null;
   page.value = 1;
 }
 
-function formatDate(dateString) {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-
-  // Opciones de formato, especificando que la zona horaria debe ser UTC.
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC", // ¡Esta es la clave!
-  };
-
-  // Usamos el locale 'es-MX' para el formato DD/MM/YYYY y las opciones con UTC.
-  // Nota: es-MX naturalmente usa DD/MM/YYYY. Si necesitaras otro locale como 'en-US' (MM/DD/YYYY),
-  // las opciones de year, month, day te darían control.
-  return new Intl.DateTimeFormat("es-MX", options).format(date);
-}
-
-function viewBranch(branch) {
-  viewingBranch.value = { ...branch };
+function viewUser(user) {
+  viewingUser.value = { ...user };
   isViewModalOpen.value = true;
 }
 
-function editBranch(branch) {
-  editingBranch.value = { ...branch };
+function editUser(user) {
+  editingUser.value = { ...user };
   isEditModalOpen.value = true;
 }
 
 function editFromViewModal() {
-  editingBranch.value = { ...viewingBranch.value };
+  editingUser.value = { ...viewingUser.value };
   isViewModalOpen.value = false;
   isEditModalOpen.value = true;
 }
 
-function confirmDeleteBranch(branch) {
-  deletingBranch.value = branch;
+function confirmDeleteUser(user) {
+  deletingUser.value = user;
   isDeleteModalOpen.value = true;
 }
 
-function addBranch(branchData) {
-  branchStore.addBranch(branchData);
+function addUser(userData) {
+  userStore.addUser(userData);
   isAddModalOpen.value = false;
-  newBranch.value = { ...defaultBranch };
+  newUser.value = { ...defaultUser };
 }
 
-function updateBranch(branchData) {
-  branchStore.updateBranch(branchData);
+function updateUser(userData) {
+  userStore.updateUser(userData);
   isEditModalOpen.value = false;
 }
 
-function deleteBranch() {
-  if (deletingBranch.value) {
-    branchStore.deleteBranch(deletingBranch.value.id);
+function deleteUser() {
+  if (deletingUser.value) {
+    userStore.deleteUser(deletingUser.value.id);
     isDeleteModalOpen.value = false;
-    deletingBranch.value = null;
+    deletingUser.value = null;
   }
 }
 
@@ -276,9 +290,9 @@ onMounted(async () => {
   try {
     // Always fetch users when the component is mounted
     loading.value = true;
-    await branchStore.fetchBranches();
+    await userStore.fetchUsers();
   } catch (error) {
-    console.error("Error loading branches:", error);
+    console.error("Error loading users:", error);
   } finally {
     loading.value = false;
   }

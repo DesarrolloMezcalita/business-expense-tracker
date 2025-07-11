@@ -1,81 +1,67 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-      {{ isEditing ? "Editar Insumo" : "Agregar Nuevo Insumo" }}
-    </h2>
-
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Nombre -->
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1"
-            >Nombre</label
-          >
-          <input
-            id="name"
-            v-model="form.nombre"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <!-- Tipo -->
-        <div>
-          <label
-            for="category"
-            class="block text-sm font-medium text-gray-700 mb-1"
-            >Tipo</label
-          >
-          <input
-            id="category"
-            v-model="form.tipo"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-
-        <!-- Unidad -->
-        <div>
-          <label for="unit" class="block text-sm font-medium text-gray-700 mb-1"
-            >Unidad</label
-          >
-          <input
-            id="unit"
-            v-model="form.unidad_de_medida"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Nombre -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1"
+          >Nombre</label
+        >
+        <input
+          id="name"
+          v-model="form.nombre"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
       </div>
 
-      <!-- Botones -->
-      <div class="flex justify-end space-x-3">
-        <button
-          type="button"
-          @click="$emit('cancel')"
-          class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <!-- Tipo -->
+      <div>
+        <label
+          for="category"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Tipo</label
         >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          :disabled="supplyStore.loading"
-        >
-          {{
-            supplyStore.loading
-              ? "Guardando..."
-              : isEditing
-              ? "Actualizar"
-              : "Guardar"
-          }}
-        </button>
+        <input
+          id="category"
+          v-model="form.tipo"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
       </div>
-    </form>
-  </div>
+
+      <!-- Unidad -->
+      <div>
+        <label for="unit" class="block text-sm font-medium text-gray-700 mb-1"
+          >Unidad</label
+        >
+        <input
+          id="unit"
+          v-model="form.unidad_de_medida"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-2 mt-6">
+      <UButton
+        type="button"
+        label="Cancelar"
+        variant="soft"
+        @click="$emit('cancel')"
+      />
+      <UButton
+        type="submit"
+        :label="isEditing ? 'Actualizar Insumo' : 'Agregar Insumo'"
+        :loading="isSubmitting"
+        :disabled="supplyStore.loading"
+      />
+    </div>
+  </form>
 </template>
 
 <script setup>

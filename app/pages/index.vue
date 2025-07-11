@@ -1,22 +1,35 @@
 <template>
-  <div class="flex flex-col gap-6 py-8 px-4">
-    <!-- Filtros interactivos -->
+  <div class="flex flex-col gap-6 py-3 px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Filtro de fecha -->
       <div class="w-full bg-white rounded-lg shadow-sm p-3">
-        <div class="flex flex-wrap items-center justify-between">
+        <div
+          class="flex flex-wrap flex-col lg:flex-row lg:items-center lg:justify-between"
+        >
           <h3 class="text-lg font-medium text-gray-700 flex items-center">
             <UIcon name="i-heroicons-calendar" class="mr-2" />
-            Fecha
+            Rango de fechas
           </h3>
-          <div class="flex items-center space-x-3">
+
+          <div class="flex items-center mt-3 lg:mt-0">
             <div class="flex items-center">
+              <span class="mr-2 text-sm text-gray-500">De</span>
               <UInput
-                v-model="filters.date"
+                v-model="filters.dateFrom"
                 type="date"
+                :max="filters.dateTo || maxFecha"
+                class="w-36"
+                @update:model-value="applyFilters"
+              />
+            </div>
+            <div class="flex items-center">
+              <span class="mx-2 text-sm text-gray-500">a</span>
+              <UInput
+                v-model="filters.dateTo"
+                type="date"
+                :min="filters.dateFrom"
                 :max="maxFecha"
-                size="sm"
-                class="w-40"
+                class="w-36"
                 @update:model-value="applyFilters"
               />
             </div>
@@ -26,19 +39,20 @@
 
       <!-- Filtro de sucursal -->
       <div class="w-full bg-white rounded-lg shadow-sm p-3">
-        <div class="flex flex-wrap items-center justify-between">
+        <div
+          class="flex flex-wrap flex-col lg:flex-row lg:items-center lg:justify-between"
+        >
           <h3 class="text-lg font-medium text-gray-700 flex items-center">
             <UIcon name="i-heroicons-building-office-2" class="mr-2" />
             Sucursal
           </h3>
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-3 mt-3 lg:mt-0">
             <USelect
               v-model="filters.sucursalId"
               :items="branchOptions"
               placeholder="Todas las sucursales"
+              class="w-48"
               @update:model-value="applyFilters"
-              class="w-40"
-              size="sm"
             />
           </div>
         </div>
@@ -46,7 +60,7 @@
     </div>
 
     <!-- Indicador de gastos totales para la sucursal seleccionada -->
-    <div v-if="selectedBranch" class="w-full bg-blue-50 rounded-lg p-3 mt-2">
+    <!-- <div v-if="selectedBranch" class="w-full bg-blue-50 rounded-lg p-3 mt-2">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           <UIcon
@@ -62,9 +76,9 @@
           >${{ formatCurrency(branchTotalExpenses) }}</span
         >
       </div>
-    </div>
+    </div> -->
 
-    <!-- Componente de tarjetas de resumen de gastos -->
+    <!-- Tarjetas de resumen de gastos -->
     <ExpenseSummaryCards />
 
     <!-- Componentes de análisis detallado -->
@@ -84,15 +98,6 @@
 import { ref, computed, onMounted } from "vue";
 import { useExpenseStore } from "~/stores/expense";
 import { useBranchStore } from "~/stores/branch";
-import ExpenseSummaryCards from "~/components/ExpenseSummaryCards.vue";
-// import ExpenseCategoryDistribution from "~/components/ExpenseCategoryDistribution.vue";
-// import ExpensePaymentMethodBreakdown from "~/components/ExpensePaymentMethodBreakdown.vue";
-// import ExpenseSubcategoryAnalysis from "~/components/ExpenseSubcategoryAnalysis.vue";
-
-// Define page metadata
-definePageMeta({
-  // No middleware required for demonstration
-});
 
 // Stores
 const expenseStore = useExpenseStore();
@@ -102,7 +107,8 @@ const maxFecha = new Date().toISOString().split("T")[0];
 
 // Estado de filtros
 const filters = ref({
-  date: "",
+  dateFrom: "",
+  dateTo: "",
   sucursalId: 0,
 });
 
@@ -152,9 +158,13 @@ onMounted(async () => {
     })),
   ];
 
-  // Establecer fecha inicial (primer día del mes actual)
+  // Establecer rango de fechas inicial (primer y último día del mes actual)
   const now = new Date();
-  filters.value.date = now.toISOString().split("T")[0];
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  filters.value.dateFrom = firstDay.toISOString().split("T")[0];
+  filters.value.dateTo = lastDay.toISOString().split("T")[0];
 
   // Aplicar filtros iniciales
   await applyFilters(filters.value);

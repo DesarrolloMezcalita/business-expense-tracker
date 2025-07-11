@@ -1,9 +1,5 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-      {{ isEditing ? "Editar SKU" : "Agregar Nuevo SKU" }}
-    </h2>
-
+  <div>
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- SKU -->
@@ -100,7 +96,22 @@
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-end space-x-3">
+      <div class="flex justify-end gap-2 mt-6">
+        <UButton
+          type="button"
+          label="Cancelar"
+          variant="soft"
+          @click="$emit('cancel')"
+        />
+        <UButton
+          type="submit"
+          :label="isEditing ? 'Actualizar SKU' : 'Agregar SKU'"
+          :loading="isSubmitting"
+          :disabled="skuStore.loading"
+        />
+      </div>
+
+      <!-- <div class="flex justify-end space-x-3">
         <button
           type="button"
           @click="$emit('cancel')"
@@ -110,7 +121,7 @@
         </button>
         <button
           type="submit"
-          class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          class="px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
           :disabled="skuStore.loading"
         >
           {{
@@ -121,7 +132,7 @@
               : "Guardar"
           }}
         </button>
-      </div>
+      </div> -->
     </form>
   </div>
 </template>

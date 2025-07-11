@@ -38,11 +38,6 @@ export const useBranchStore = defineStore('branch', {
         if (error) throw error;
         
         this.branches = data || [];
-        
-        // If no branches exist in the database, seed with initial data
-        if (this.branches.length === 0) {
-          await this.useMockData();
-        }
       } catch (error) {
         this.error = error.message || 'Failed to fetch branches';
         console.error('Error fetching branches:', error);

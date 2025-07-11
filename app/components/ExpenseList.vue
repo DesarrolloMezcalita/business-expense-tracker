@@ -7,7 +7,9 @@
       </UButton>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 mb-6">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mb-6"
+    >
       <!-- Barra de búsqueda y filtros -->
       <div class="p-4 flex flex-col md:flex-row gap-4">
         <div class="flex-grow">
@@ -44,7 +46,7 @@
       <!-- Filtros avanzados -->
       <div
         v-if="showAdvancedFilters"
-        class="px-4 pb-4 border-t border-gray-200"
+        class="px-4 pb-4 border-t border-gray-200 dark:border-gray-700"
       >
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <!-- <UFormGroup label="Categoría">
@@ -121,13 +123,15 @@
     </div>
 
     <!-- Tabla de gastos -->
-    <div class="bg-white rounded-lg border border-gray-200">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+    >
       <div v-if="loading" class="flex justify-center py-8">
         <UIcon name="i-heroicons-arrow-path" class="animate-spin h-8 w-8" />
       </div>
 
       <div v-else-if="!paginatedExpenses.length" class="py-8 text-center">
-        <p class="text-gray-500">
+        <p class="text-gray-500 dark:text-gray-400">
           {{
             hasActiveFilters
               ? "No se encontraron gastos con los filtros aplicados."
@@ -149,11 +153,11 @@
         <div class="hidden md:block">
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('fecha')"
                   >
                     Fecha
@@ -169,7 +173,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('proveedor')"
                   >
                     Proveedor
@@ -185,7 +189,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('sucursal')"
                   >
                     Sucursal
@@ -201,7 +205,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('subtotal')"
                   >
                     Subtotal
@@ -217,7 +221,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('descuento')"
                   >
                     Descuento
@@ -233,7 +237,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('impuesto')"
                   >
                     Impuesto
@@ -249,7 +253,7 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                     @click="toggleSort('total')"
                   >
                     Total
@@ -265,22 +269,28 @@
                   </th>
                   <th
                     scope="col"
-                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody
+                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+              >
                 <tr
                   v-for="expense in paginatedExpenses"
                   :key="expense.id"
-                  class="hover:bg-gray-50"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ formatDate(expense.fecha) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     <span
                       :title="expense.proveedor"
                       class="inline-block max-w-[150px] truncate"
@@ -288,19 +298,29 @@
                       {{ expense.proveedor }}
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ expense.sucursal?.nombre || "No asignada" }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ formatCurrency(expense.subtotal) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ formatCurrency(expense.descuento) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ formatCurrency(expense.impuesto) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                  >
                     {{ formatCurrency(expense.total) }}
                   </td>
                   <td
@@ -345,11 +365,11 @@
             <div
               v-for="expense in paginatedExpenses"
               :key="expense.id"
-              class="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+              class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4"
             >
               <div class="flex justify-between items-start mb-3">
                 <div>
-                  <h3 class="text-sm font-medium text-gray-900">
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                     <span
                       :title="expense.proveedor"
                       class="inline-block max-w-full truncate"
@@ -357,7 +377,7 @@
                       {{ expense.proveedor }}
                     </span>
                   </h3>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
                     {{ formatDate(expense.fecha) }} |
                     {{ expense.sucursal?.nombre || "No asignada" }}
                   </p>
@@ -371,21 +391,27 @@
 
               <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
                 <div>
-                  <p class="text-xs text-gray-500">Subtotal</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Subtotal
+                  </p>
                   <p>{{ formatCurrency(expense.subtotal) }}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500">Descuento</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Descuento
+                  </p>
                   <p>{{ formatCurrency(expense.descuento) }}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500">Impuesto</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Impuesto
+                  </p>
                   <p>{{ formatCurrency(expense.impuesto) }}</p>
                 </div>
               </div>
 
               <div
-                class="flex justify-end space-x-2 border-t border-gray-100 pt-3"
+                class="flex justify-end space-x-2 border-t border-gray-100 dark:border-gray-700 pt-3"
               >
                 <UButton
                   color="gray"
@@ -418,7 +444,7 @@
 
         <!-- Paginación -->
         <div
-          class="px-6 py-3 flex items-center justify-between border-t border-gray-200"
+          class="px-6 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700"
         >
           <div class="flex-1 flex justify-between sm:hidden">
             <UButton
@@ -442,7 +468,7 @@
             class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
           >
             <div>
-              <p class="text-sm text-gray-700">
+              <p class="text-sm text-gray-700 dark:text-gray-300">
                 Mostrando
                 <span class="font-medium">{{ paginationInfo }}</span>
               </p>
@@ -468,7 +494,7 @@
                   icon="i-heroicons-chevron-left"
                 />
                 <span
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 >
                   {{ currentPage }}
                 </span>
