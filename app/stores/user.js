@@ -54,7 +54,7 @@ export const useUserStore = defineStore('user', {
         // Fetch users from Supabase
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('profiles')
+          .from('active_profiles')
           .select('id, name, email, role, is_active, created_at, updated_at')
           .order('id', { ascending: true });
         

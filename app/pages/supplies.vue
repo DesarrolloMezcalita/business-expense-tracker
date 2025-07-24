@@ -29,7 +29,7 @@
       </tr>
       <tr v-else-if="store.supplies.length === 0">
         <td colspan="6" class="px-6 py-4 text-center">
-          No se encontraron SKUs
+          No se encontraron insumos
         </td>
       </tr>
 

@@ -152,11 +152,11 @@ export const useExpenseStore = defineStore('expense', {
         const supabase = useSupabase();
 
         let query = supabase
-          .from('compras_gastos')
+          .from('active_compras_gastos')
           .select(`
             *,
-            items:compra_gasto_detalles(*),
-            sucursal:sucursales(id, nombre)
+            items:active_compra_gasto_detalles(*),
+            sucursal:active_sucursales(id, nombre)
           `);
 
         // Aplicar filtros de rango de fechas a la consulta
@@ -201,11 +201,11 @@ export const useExpenseStore = defineStore('expense', {
         const supabase = useSupabase();
 
         const { data, error } = await supabase
-          .from('compras_gastos')
+          .from('active_compras_gastos')
           .select(`
             *,
-            items:compra_gasto_detalles(*),
-            sucursal:sucursales(id, nombre)
+            items:active_compra_gasto_detalles(*),
+            sucursal:active_sucursales(id, nombre)
           `)
           .eq('id', id)
           .single();
@@ -255,7 +255,7 @@ export const useExpenseStore = defineStore('expense', {
         const supabase = useSupabase();
 
         let query = supabase
-          .from('compras_gastos')
+          .from('active_compras_gastos')
           .select(`*`);
 
         // Aplicar filtros de fecha a la consulta

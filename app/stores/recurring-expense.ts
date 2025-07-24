@@ -191,11 +191,11 @@ export const useRecurringExpenseStore = defineStore("recurring-expense", {
         const supabase = useSupabase();
 
         const query = supabase
-          .from("gastos_recurrentes")
+          .from("active_gastos_recurrentes")
           .select(
             `
             *,
-            sucursal:sucursales(id, nombre)
+            sucursal:active_sucursales(id, nombre)
           `
           )
           .order("created_at", { ascending: false });
@@ -228,11 +228,11 @@ export const useRecurringExpenseStore = defineStore("recurring-expense", {
         const supabase = useSupabase();
 
         const { data, error } = await supabase
-          .from("gastos_recurrentes")
+          .from("active_gastos_recurrentes")
           .select(
             `
             *,
-            sucursal:sucursales(id, nombre)
+            sucursal:active_sucursales(id, nombre)
           `
           )
           .eq("id", id)
