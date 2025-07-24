@@ -49,7 +49,7 @@ export const useWAUserStore = defineStore('wauser', {
         // Fetch users from Supabase
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('wa_profiles')
+          .from('active_wa_profiles')
           .select('id, name, phone, is_active, created_at, updated_at')
           .order('id', { ascending: true });
         

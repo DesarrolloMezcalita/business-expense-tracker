@@ -40,8 +40,8 @@ export const useCategoryStore = defineStore('category', {
         
         // Construir consulta base
         let query = supabase
-          .from('categorias_gastos')
-          .select('*, subcategorias_gastos(*)', { count: 'exact' });
+          .from('active_categorias_gastos')
+          .select('*, active_subcategorias_gastos(*)', { count: 'exact' });
         
         // Aplicar filtros
         if (this.filters.search) {
@@ -74,8 +74,8 @@ export const useCategoryStore = defineStore('category', {
       try {
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('categorias_gastos')
-          .select('*, subcategorias_gastos(*)')
+          .from('active_categorias_gastos')
+          .select('*, active_subcategorias_gastos(*)')
           .eq('id', id)
           .single();
           
@@ -183,7 +183,7 @@ export const useCategoryStore = defineStore('category', {
         const supabase = useSupabase();
         
         let query = supabase
-          .from('subcategorias_gastos')
+          .from('active_subcategorias_gastos')
           .select('*');
         
         if (categoryId) {
@@ -210,7 +210,7 @@ export const useCategoryStore = defineStore('category', {
       try {
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('subcategorias_gastos')
+          .from('active_subcategorias_gastos')
           .select('*, category:category_id(*)')
           .eq('id', id)
           .single();

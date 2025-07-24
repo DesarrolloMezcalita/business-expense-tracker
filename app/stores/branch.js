@@ -31,7 +31,7 @@ export const useBranchStore = defineStore('branch', {
         // Fetch branches from Supabase
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('sucursales')
+          .from('active_sucursales')
           .select('*')
           .order('id', { ascending: true });
         

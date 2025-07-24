@@ -33,7 +33,7 @@ export const useSupplyStore = defineStore('supply', {
 
         // Construir consulta base
         let query = supabase
-          .from('insumos')
+          .from('active_insumos')
           .select('*', { count: 'exact' });
 
         // Aplicar filtros
@@ -69,7 +69,7 @@ export const useSupplyStore = defineStore('supply', {
 
         // Construir consulta base
         let query = supabase
-          .from('insumos')
+          .from('active_insumos')
           .select('*', { count: 'exact' });
 
         // Aplicar paginación
@@ -92,7 +92,7 @@ export const useSupplyStore = defineStore('supply', {
       try {
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('insumos')
+          .from('active_insumos')
           .select('*')
           .eq('id', id)
           .single();

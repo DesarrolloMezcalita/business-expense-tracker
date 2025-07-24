@@ -33,10 +33,10 @@ export const useSkuStore = defineStore('sku', {
 
         // Construir consulta base
         let query = supabase
-          .from('sku_insumos')
+          .from('active_sku_insumos')
           .select(`
             *,
-            insumo:insumos(id, nombre)
+            insumo:active_insumos(id, nombre)
           `, { count: 'exact' });
 
         // Aplicar filtros
@@ -69,10 +69,10 @@ export const useSkuStore = defineStore('sku', {
       try {
         const supabase = useSupabase();
         const { data, error } = await supabase
-          .from('sku_insumos')
+          .from('active_sku_insumos')
           .select(`
             *,
-            insumo:insumos(id, nombre)
+            insumo:active_insumos(id, nombre)
           `)
           .eq('id', id)
           .single();

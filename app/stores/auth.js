@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', {
         
         // Check if email already exists
         const { data: existingUsers } = await supabase
-          .from('profiles')
+          .from('active_profiles')
           .select('email')
           .eq('email', userData.email);
           
@@ -148,7 +148,7 @@ export const useAuthStore = defineStore('auth', {
         
         // Get user by email
         const { data: users, error } = await supabase
-          .from('profiles')
+          .from('active_profiles')
           .select('*')
           .eq('email', email);
           
@@ -243,7 +243,7 @@ export const useAuthStore = defineStore('auth', {
         // Get user data
         const supabase = useSupabase();
         const { data: user, error } = await supabase
-          .from('profiles')
+          .from('active_profiles')
           .select('*')
           .eq('id', userId)
           .single();
@@ -384,7 +384,7 @@ export const useAuthStore = defineStore('auth', {
         
         // Check if email exists
         const { data: users, error } = await supabase
-          .from('profiles')
+          .from('active_profiles')
           .select('id, email, name')
           .eq('email', email);
           
