@@ -94,12 +94,12 @@
                   <!-- Contador de subcategorías -->
                   <span
                     v-if="
-                      category.subcategorias_gastos &&
-                      category.subcategorias_gastos.length > 0
+                      category.active_subcategorias_gastos &&
+                      category.active_subcategorias_gastos.length > 0
                     "
                     class="ml-2 px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full"
                   >
-                    {{ category.subcategorias_gastos.length }}
+                    {{ category.active_subcategorias_gastos.length }}
                   </span>
                 </div>
               </td>
@@ -204,12 +204,12 @@
             <template
               v-if="
                 expandedCategories.includes(category.id) &&
-                category.subcategorias_gastos &&
-                category.subcategorias_gastos.length > 0
+                category.active_subcategorias_gastos &&
+                category.active_subcategorias_gastos.length > 0
               "
             >
               <tr
-                v-for="subcategory in category.subcategorias_gastos"
+                v-for="subcategory in category.active_subcategorias_gastos"
                 :key="`${category.id}-${subcategory.id}`"
                 class="bg-gray-50"
               >
@@ -654,6 +654,8 @@ const filters = ref({
 // Cargar categorías al montar el componente
 onMounted(() => {
   categoryStore.fetchCategories();
+
+  console.log("categoryStore.categories", categoryStore.categories);
 });
 
 // Debounce para la búsqueda

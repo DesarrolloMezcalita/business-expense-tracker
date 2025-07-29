@@ -23,14 +23,14 @@
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f9fafb;
   --color-bg-tertiary: #f3f4f6;
-  
+
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-text-tertiary: #6b7280;
-  
+
   --color-border-primary: #e5e7eb;
   --color-border-secondary: #d1d5db;
-  
+
   --color-shadow: rgba(0, 0, 0, 0.1);
 }
 
@@ -41,14 +41,14 @@
   --color-bg-primary: #111827;
   --color-bg-secondary: #1f2937;
   --color-bg-tertiary: #374151;
-  
+
   --color-text-primary: #f9fafb;
   --color-text-secondary: #e5e7eb;
   --color-text-tertiary: #d1d5db;
-  
+
   --color-border-primary: #374151;
   --color-border-secondary: #4b5563;
-  
+
   --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
